@@ -559,6 +559,110 @@ html.light #drop-overlay{background:rgba(220,99,0,.05)}
 html.light .align-guide.h{background:var(--cyan)}
 html.light .align-guide.v{background:var(--cyan)}
 
+/* ══════════════════════════════════════════════════════
+   MOBILE RESPONSIVE STYLES
+   ══════════════════════════════════════════════════════ */
+
+/* Mobile bottom action bar */
+#mobile-bar{
+  display:none;
+  position:fixed;bottom:0;left:0;right:0;
+  background:var(--surface);border-top:1px solid var(--border2);
+  z-index:1000;padding:0 4px env(safe-area-inset-bottom,0);
+  box-shadow:0 -4px 20px rgba(0,0,0,.3);
+}
+.mb-row{display:flex;align-items:center;justify-content:space-around;height:56px;}
+.mb-btn{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:3px;padding:6px 8px;border:none;background:transparent;
+  cursor:pointer;color:var(--text2);border-radius:10px;min-width:48px;
+  transition:background .12s,color .12s;flex:1;
+}
+.mb-btn:active{background:var(--surface2);transform:scale(.93)}
+.mb-btn svg{flex-shrink:0}
+.mb-btn span{font-size:9px;font-family:var(--font);white-space:nowrap}
+.mb-btn.accent{color:var(--accent)}
+.mb-sep-v{width:1px;height:28px;background:var(--border2);flex-shrink:0}
+
+/* Mobile node context sheet */
+#mobile-sheet{
+  display:none;position:fixed;bottom:0;left:0;right:0;
+  background:var(--surface);border-radius:20px 20px 0 0;
+  border-top:1px solid var(--border2);
+  z-index:2000;padding:0 0 env(safe-area-inset-bottom,16px);
+  box-shadow:0 -8px 40px rgba(0,0,0,.5);
+  animation:sheetUp .2s ease;max-height:85vh;overflow-y:auto;
+}
+@keyframes sheetUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+#mobile-sheet-handle{
+  width:36px;height:4px;background:var(--border2);border-radius:2px;
+  margin:10px auto 0;
+}
+#mobile-sheet-title{
+  font-size:13px;font-weight:500;color:var(--text2);
+  text-align:center;padding:8px 16px 4px;
+}
+.ms-section-label{
+  font-size:10px;font-family:var(--mono);text-transform:uppercase;
+  letter-spacing:.06em;color:var(--text3);padding:10px 16px 4px;
+}
+.ms-colors{display:flex;gap:8px;flex-wrap:wrap;padding:4px 16px 8px}
+.ms-swatch{
+  width:32px;height:32px;border-radius:50%;cursor:pointer;
+  border:2px solid rgba(255,255,255,.15);transition:transform .1s;flex-shrink:0;
+}
+.ms-swatch:active{transform:scale(1.2)}
+.ms-swatch.active{box-shadow:0 0 0 2px #fff,0 0 0 4px var(--accent)}
+.ms-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:8px 16px 12px}
+.ms-action{
+  padding:12px 8px;border-radius:12px;border:1px solid var(--border2);
+  background:transparent;cursor:pointer;font-size:13px;font-family:var(--font);
+  color:var(--text);display:flex;flex-direction:column;align-items:center;gap:4px;
+  transition:background .1s;
+}
+.ms-action:active{background:var(--surface2)}
+.ms-action.danger{color:var(--red);border-color:rgba(239,68,68,.3)}
+.ms-action svg{flex-shrink:0}
+#mobile-sheet-overlay{
+  display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:1999;
+}
+
+/* Responsive toolbar — hide less important buttons on small screens */
+@media(max-width:600px){
+  #toolbar{
+    top:8px;left:8px;right:8px;transform:none;
+    border-radius:12px;padding:4px 8px;
+    gap:2px;overflow-x:auto;scrollbar-width:none;
+  }
+  #toolbar::-webkit-scrollbar{display:none}
+  /* Hide drag handle and separators on mobile */
+  #toolbar-drag-handle{display:none}
+  .tb-sep{display:none}
+  /* Hide less critical buttons */
+  #btn-layout,#btn-export-json,#btn-export-png,
+  #btn-import,#btn-shortcuts,#btn-clear,
+  #btn-undo,#btn-redo{display:none}
+  /* Smaller buttons */
+  .tb-btn{width:30px;height:30px}
+  #btn-new{padding:0 8px;font-size:11px}
+  #map-name{max-width:90px;font-size:11px}
+  .tb-appname{display:none}
+  .tb-info{display:none}
+  /* Show mobile bar */
+  #mobile-bar{display:block}
+  /* Shift add button and copyright up above mobile bar */
+  #add-btn{bottom:72px}
+  #copyright{bottom:62px}
+  /* Hide hint on mobile */
+  #hint{display:none}
+  /* Minimap smaller on mobile */
+  #minimap{width:120px!important}
+  /* Hide zoom indicator */
+  #zoom-indicator{display:none}
+  /* Status bar */
+  #status{right:8px;bottom:62px}
+}
+
 /* ── Animations ─────────────────────────────────────────────────────────────── */
 @keyframes nodeEnter{from{transform:scale(.4);opacity:0}to{transform:scale(1);opacity:1}}
 @keyframes nodeExit{to{transform:scale(.3);opacity:0}}
@@ -612,14 +716,59 @@ html.light .align-guide.v{background:var(--cyan)}
 
   <button id="add-btn" title="Add Node (A)">+</button>
   <div id="copyright">© 2026 Varela Technologies Private Limited. All rights reserved.</div>
-  <div id="copyright">© 2026 Varela Technologies Private Limited. All rights reserved.</div>
-  <div id="copyright">© 2026 Varela Technologies Private Limited. All rights reserved.</div>
   <div id="status" class="saved">● saved</div>
   <div id="zoom-indicator">100%</div>
   <div id="hint">Double-click: add node · Drag: box-select · Space/middle-mouse+drag: pan · Scroll: zoom · Ctrl+click 2 nodes: connect/unlink · Right-click node: options</div>
   <div id="sel-rect"></div>
   <div id="multi-popup" style="display:none"></div>
   <div id="tb-tooltip"></div>
+
+  <!-- Mobile bottom bar -->
+  <div id="mobile-bar">
+    <div class="mb-row">
+      <button class="mb-btn accent" id="mb-add">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+        <span>Add</span>
+      </button>
+      <div class="mb-sep-v"></div>
+      <button class="mb-btn" id="mb-undo">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7v6h6"/><path d="M3 13A9 9 0 1 0 6 6.3L3 7"/></svg>
+        <span>Undo</span>
+      </button>
+      <button class="mb-btn" id="mb-redo">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 7v6h-6"/><path d="M21 13A9 9 0 1 1 18 6.3L21 7"/></svg>
+        <span>Redo</span>
+      </button>
+      <div class="mb-sep-v"></div>
+      <button class="mb-btn" id="mb-fit">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h6v2H5v4H3V3zm15 0h-6v2h4v4h2V3zM3 21h6v-2H5v-4H3v6zm15 0h-6v-2h4v-4h2v6z"/></svg>
+        <span>Fit</span>
+      </button>
+      <button class="mb-btn" id="mb-layout">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="2"/><circle cx="5" cy="19" r="2"/><circle cx="19" cy="19" r="2"/><path d="M12 7v4M12 11l-5 6M12 11l5 6"/></svg>
+        <span>Layout</span>
+      </button>
+      <div class="mb-sep-v"></div>
+      <button class="mb-btn" id="mb-save">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+        <span>Save</span>
+      </button>
+      <button class="mb-btn" id="mb-theme">
+        <svg class="icon-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        <svg class="icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/></svg>
+        <span>Theme</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile node action sheet -->
+  <div id="mobile-sheet-overlay"></div>
+  <div id="mobile-sheet">
+    <div id="mobile-sheet-handle"></div>
+    <div id="mobile-sheet-title">Node options</div>
+    <div id="mobile-sheet-content"></div>
+  </div>
+
   <div id="drop-overlay">
     <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#DC6300" stroke-width="1.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
     <p>Drop your mind map file here</p>
@@ -646,6 +795,7 @@ html.light .align-guide.v{background:var(--cyan)}
 // ═══════════════════════════════════════════════════════════════════════════════
 let state = { nodes:[], connections:[], nextId:1, mapName:'Untitled map' };
 let history=[], future=[];
+let unsavedChanges=false; // true whenever changes exist that haven't been saved to a file
 let transform={x:0,y:0,scale:1};
 let selectedNodes=new Set();
 let dragging=null, dragOffX=0, dragOffY=0, didDrag=false;
@@ -762,6 +912,7 @@ function restoreState(s){
 let saveTimer=null;
 function schedSave(){
   clearTimeout(saveTimer);setStatus('','◌ unsaved');
+  unsavedChanges=true; // mark as having unsaved changes
   saveTimer=setTimeout(()=>{
     try{localStorage.setItem('mm_v5',JSON.stringify({state,transform}));setStatus('saved','● saved');}
     catch{setStatus('','⚠ save failed');}
@@ -782,6 +933,7 @@ function saveToFile(){
   const a=document.createElement('a');a.href=URL.createObjectURL(blob);
   a.download=(state.mapName||'mindmap').replace(/[^a-z0-9]/gi,'_').toLowerCase()+'.json';a.click();
   setStatus('saved','● saved');
+  unsavedChanges=false; // user has saved to file — safe to close tab
 }
 function updateInfoBar(){
   const info=document.getElementById('tb-info');
@@ -2235,23 +2387,219 @@ document.addEventListener('drop',e=>{
 });
 
 // ═══════════════════════════════════════════════════════════════════════════════
+// MOBILE / TOUCH SUPPORT
+// ═══════════════════════════════════════════════════════════════════════════════
+const isMobile=()=>window.innerWidth<=600||('ontouchstart' in window);
+
+// ── Mobile bar wiring ─────────────────────────────────────────────────────────
+document.getElementById('mb-add').addEventListener('click',()=>addNode());
+document.getElementById('mb-undo').addEventListener('click',undo);
+document.getElementById('mb-redo').addEventListener('click',redo);
+document.getElementById('mb-fit').addEventListener('click',fitToScreen);
+document.getElementById('mb-layout').addEventListener('click',autoLayout);
+document.getElementById('mb-save').addEventListener('click',saveToFile);
+document.getElementById('mb-theme').addEventListener('click',()=>{toggleTheme();syncMobileThemeIcon();});
+
+function syncMobileThemeIcon(){
+  const isLight=document.documentElement.classList.contains('light');
+  const moon=document.querySelector('#mb-theme .icon-moon');
+  const sun=document.querySelector('#mb-theme .icon-sun');
+  if(moon)moon.style.display=isLight?'none':'block';
+  if(sun)sun.style.display=isLight?'block':'none';
+}
+
+// ── Mobile sheet (long-press on node = context menu equivalent) ───────────────
+const mobileSheet=document.getElementById('mobile-sheet');
+const mobileSheetOverlay=document.getElementById('mobile-sheet-overlay');
+const mobileSheetContent=document.getElementById('mobile-sheet-content');
+const mobileSheetTitle=document.getElementById('mobile-sheet-title');
+let longPressTimer=null;
+let longPressNodeId=null;
+
+function openMobileSheet(nodeId){
+  const n=state.nodes.find(x=>x.id===nodeId);
+  if(!n)return;
+  longPressNodeId=nodeId;
+  mobileSheetTitle.textContent=n.text||'Untitled node';
+  mobileSheetContent.innerHTML='';
+
+  // ── Fill colour
+  const flbl=document.createElement('div');flbl.className='ms-section-label';flbl.textContent='Fill color';
+  mobileSheetContent.appendChild(flbl);
+  const frow=document.createElement('div');frow.className='ms-colors';
+  VIBRANT_COLORS.forEach(c=>{
+    const sw=document.createElement('div');sw.className='cm-swatch ms-swatch'+(n.color===c.hex?' active':'');
+    sw.style.background=c.hex;sw.style.borderColor=c.hex;sw.title=c.name;
+    sw.addEventListener('click',()=>{snap();n.color=c.hex;syncNodeEl(n);schedSave();frow.querySelectorAll('.ms-swatch').forEach(s=>s.classList.remove('active'));sw.classList.add('active');});
+    frow.appendChild(sw);
+  });
+  mobileSheetContent.appendChild(frow);
+
+  // ── Border colour
+  const blbl=document.createElement('div');blbl.className='ms-section-label';blbl.textContent='Border · line color';
+  mobileSheetContent.appendChild(blbl);
+  const brow=document.createElement('div');brow.className='ms-colors';
+  VIBRANT_COLORS.forEach(c=>{
+    const sw=document.createElement('div');sw.className='cm-swatch ms-swatch'+(n.borderColor===c.hex?' active':'');
+    sw.style.background=c.hex;sw.style.borderColor=c.hex;sw.title=c.name;
+    sw.addEventListener('click',()=>{snap();n.borderColor=c.hex;syncNodeEl(n);schedSave();renderConnections();brow.querySelectorAll('.ms-swatch').forEach(s=>s.classList.remove('active'));sw.classList.add('active');});
+    brow.appendChild(sw);
+  });
+  mobileSheetContent.appendChild(brow);
+
+  // ── Actions grid
+  const albl=document.createElement('div');albl.className='ms-section-label';albl.textContent='Actions';
+  mobileSheetContent.appendChild(albl);
+  const grid=document.createElement('div');grid.className='ms-actions';
+
+  const actions=[
+    {icon:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>',label:'Edit text',action:()=>{closeMobileSheet();setTimeout(()=>startEdit(nodeId),100);}},
+    {icon:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="2"/><circle cx="5" cy="19" r="2"/><circle cx="19" cy="19" r="2"/><path d="M12 7v5M12 12l-5 5M12 12l5 5"/></svg>',label:'Add child',action:()=>{closeMobileSheet();selectedNodes.clear();selectedNodes.add(nodeId);refreshSel();addNode();}},
+    {icon:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>',label:n.type==='parent'?'Unset parent':'Set parent',action:()=>{snap();n.type=n.type==='parent'?'normal':'parent';syncNodeEl(n);schedSave();closeMobileSheet();}},
+    {icon:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>',label:'Connect to…',action:()=>{closeMobileSheet();selectedNodes.clear();selectedNodes.add(nodeId);refreshSel();toast('Tap another node to connect');}},
+    {icon:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg>',label:'Delete node',danger:true,action:()=>{closeMobileSheet();confirmDelete(nodeId,false);}},
+    {icon:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>',label:'Delete + children',danger:true,action:()=>{closeMobileSheet();confirmDelete(nodeId,true);}},
+  ];
+  actions.forEach(a=>{
+    const btn=document.createElement('button');
+    btn.className='ms-action'+(a.danger?' danger':'');
+    btn.innerHTML=a.icon+'<span style="font-size:12px">'+a.label+'</span>';
+    btn.addEventListener('click',a.action);
+    grid.appendChild(btn);
+  });
+  mobileSheetContent.appendChild(grid);
+
+  // Show sheet
+  mobileSheet.style.display='block';
+  mobileSheetOverlay.style.display='block';
+}
+
+function closeMobileSheet(){
+  mobileSheet.style.display='none';
+  mobileSheetOverlay.style.display='none';
+  longPressNodeId=null;
+}
+mobileSheetOverlay.addEventListener('click',closeMobileSheet);
+
+// ── Touch events on canvas ────────────────────────────────────────────────────
+let touchPanStart=null,touchPanOrigin=null;
+let lastTouchDist=0; // for pinch zoom
+let touchNodeId=null; // node being touched
+let touchMoved=false;
+let touchNodeStart=null; // start position when dragging a node
+
+canvasEl.addEventListener('touchstart',e=>{
+  if(e.touches.length===2){
+    // Pinch zoom start
+    const d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
+    lastTouchDist=d;return;
+  }
+  if(e.touches.length===1){
+    const t=e.touches[0];
+    const target=t.target.closest('.node');
+    touchMoved=false;
+    if(target){
+      // Long-press on node = open sheet
+      touchNodeId=parseInt(target.dataset.nid);
+      const n=state.nodes.find(x=>x.id===touchNodeId);
+      if(n){
+        const wp=screenToWorld(t.clientX,t.clientY);
+        touchNodeStart={ox:wp.x-n.x,oy:wp.y-n.y,startX:t.clientX,startY:t.clientY};
+      }
+      longPressTimer=setTimeout(()=>{
+        if(!touchMoved){openMobileSheet(touchNodeId);}
+      },550);
+    } else {
+      // Pan
+      touchPanStart={x:t.clientX,y:t.clientY};
+      touchPanOrigin={x:transform.x,y:transform.y};
+      touchNodeId=null;
+    }
+  }
+},{passive:true});
+
+canvasEl.addEventListener('touchmove',e=>{
+  if(e.touches.length===2){
+    // Pinch zoom
+    const d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
+    if(lastTouchDist>0){
+      const factor=d/lastTouchDist;
+      const cx=(e.touches[0].clientX+e.touches[1].clientX)/2;
+      const cy=(e.touches[0].clientY+e.touches[1].clientY)/2;
+      zoom(factor,cx,cy);
+    }
+    lastTouchDist=d;
+    clearTimeout(longPressTimer);
+    return;
+  }
+  if(e.touches.length===1){
+    const t=e.touches[0];
+    const dx=t.clientX-(touchNodeStart?touchNodeStart.startX:(touchPanStart?touchPanStart.x:t.clientX));
+    const dy=t.clientY-(touchNodeStart?touchNodeStart.startY:(touchPanStart?touchPanStart.y:t.clientY));
+    if(Math.hypot(dx,dy)>8){touchMoved=true;clearTimeout(longPressTimer);}
+
+    if(touchNodeId!==null&&touchNodeStart&&touchMoved){
+      // Drag node
+      const wp=screenToWorld(t.clientX,t.clientY);
+      const n=state.nodes.find(x=>x.id===touchNodeId);
+      if(n){
+        n.x=wp.x-touchNodeStart.ox;n.y=wp.y-touchNodeStart.oy;
+        const el=getEl(touchNodeId);if(el){el.style.left=n.x+'px';el.style.top=n.y+'px';}
+        renderConnections();
+      }
+    } else if(touchPanStart&&!touchNodeId){
+      // Pan canvas
+      transform.x=touchPanOrigin.x+(t.clientX-touchPanStart.x);
+      transform.y=touchPanOrigin.y+(t.clientY-touchPanStart.y);
+      applyTransform();
+    }
+  }
+},{passive:true});
+
+canvasEl.addEventListener('touchend',e=>{
+  clearTimeout(longPressTimer);
+  lastTouchDist=0;
+  if(touchNodeId!==null&&!touchMoved){
+    // Tap on node = select it
+    selectedNodes.clear();selectedNodes.add(touchNodeId);refreshSel();
+  }
+  if(touchNodeId!==null&&touchMoved){
+    snap();schedSave();updateMinimap();
+  }
+  touchNodeId=null;touchNodeStart=null;touchPanStart=null;touchMoved=false;
+},{passive:true});
+
+// Double-tap on empty canvas = add node
+let lastTap=0;
+canvasEl.addEventListener('touchend',e=>{
+  if(e.target.closest('.node'))return;
+  const now=Date.now();
+  if(now-lastTap<300){
+    const t=e.changedTouches[0];
+    const wp=screenToWorld(t.clientX,t.clientY);
+    addNode(wp.x-60,wp.y-21);
+  }
+  lastTap=now;
+},{passive:true});
+
+// ═══════════════════════════════════════════════════════════════════════════════
 // INIT
 // ═══════════════════════════════════════════════════════════════════════════════
 loadSaved();
 updateTbState();
 updateInfoBar();
-if(!state.nodes.length){
-  const vw=window.innerWidth,vh=window.innerHeight;
-  const cx=(vw/2-transform.x)/transform.scale;const cy=(vh/2-transform.y)/transform.scale;
-  const root=createNode(cx-70,cy-21,'My Mind Map');
-  root.type='parent';root.borderColor='#3D8A06';root.fontSize='fs-lg';syncNodeEl(root);
-  const c1=createNode(cx-280,cy-120,'Idea 1');const c2=createNode(cx+160,cy-120,'Idea 2');
-  const c3=createNode(cx-280,cy+100,'Idea 3');const c4=createNode(cx+160,cy+100,'Idea 4');
-  addConn(root.id,c1.id);addConn(root.id,c2.id);addConn(root.id,c3.id);addConn(root.id,c4.id);
-  const gc=createNode(cx-430,cy-160,'Sub-idea');gc.type='dependent';gc.borderColor='#8b5cf6';syncNodeEl(gc);
-  addConn(c1.id,gc.id);renderConnections();updateInfoBar();schedSave();
-}
+// Canvas starts blank — no default nodes
 setTimeout(updateMinimap,200);
+
+// ── Warn before closing tab if there are unsaved changes ──────────────────────
+// unsavedChanges is set to true by schedSave() and cleared by saveToFile().
+// The beforeunload handler reads this flag — no function wrapping needed.
+window.addEventListener('beforeunload',e=>{
+  if(state.nodes.length>0 && unsavedChanges){
+    e.preventDefault();
+    e.returnValue='';  // triggers browser's built-in "Leave site?" dialog
+  }
+});
 </script>
 </body>
 </html>
