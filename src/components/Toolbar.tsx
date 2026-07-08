@@ -58,7 +58,7 @@ export const Toolbar = ({
 
   const canUndo = historyIndex > 0;
   const canRedo = historyIndex < history.length - 1;
-  const mapName = maps.find((map) => map.id === currentMapId)?.name ?? 'Untitled Mind Map';
+  const mapName = maps.find((map) => map.id === currentMapId)?.name?.trim() || 'Untitled Mind Map';
 
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
@@ -255,7 +255,9 @@ export const Toolbar = ({
       } else {
         // Update name on non-active map directly in maps array
         useMindMapStore.setState((s) => ({
-          maps: s.maps.map((m) => m.id === id ? { ...m, name: trimmed, updatedAt: Date.now() } : m),
+          maps: s.maps.map((m) =>
+            m.id === id ? { ...m, name: trimmed || 'Untitled Mind Map', updatedAt: Date.now() } : m
+          ),
         }));
         useMindMapStore.getState().saveToLocalStorage();
       }
@@ -299,7 +301,10 @@ export const Toolbar = ({
           </span>
           {!inPill && (
             <button
-              onClick={() => setEditingName(true)}
+              onClick={() => {
+                setNameInput(mapName);
+                setEditingName(true);
+              }}
               className="p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400 transition-all"
               aria-label="Rename mind map"
               title="Rename"

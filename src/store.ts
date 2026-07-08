@@ -95,6 +95,7 @@ interface MindMapStore {
 const STORAGE_KEY = 'mindweave-data-v2';
 
 const makeId = () => `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+const normalizeMapName = (name?: string) => name?.trim() || 'Untitled Mind Map';
 
 const defaultNode = (x: number, y: number, text: string, level = 1): Node => {
   const levelSizes: Record<number, { w: number; h: number }> = {
@@ -127,7 +128,7 @@ const defaultNode = (x: number, y: number, text: string, level = 1): Node => {
 
 const makeBlankMap = (name = 'Untitled Mind Map'): MapRecord => ({
   id: `map-${makeId()}`,
-  name,
+  name: normalizeMapName(name),
   nodes: [],
   edges: [],
   createdAt: Date.now(),
@@ -154,7 +155,7 @@ export const useMindMapStore = create<MindMapStore>((set, get) => ({
   toolbarPosition: { x: 16, y: 16 },
   get mapName() {
     const s = get();
-    return s.maps.find((m) => m.id === s.currentMapId)?.name ?? 'Untitled Mind Map';
+    return normalizeMapName(s.maps.find((m) => m.id === s.currentMapId)?.name);
   },
 
   // ─── Flush working nodes/edges into the maps array ───────────────────────
@@ -186,10 +187,14 @@ export const useMindMapStore = create<MindMapStore>((set, get) => ({
       if (stored) {
         const data = JSON.parse(stored);
         if (data.version === 2 && Array.isArray(data.maps) && data.maps.length > 0) {
-          const currentMapId = data.currentMapId ?? data.maps[0].id;
-          const current = data.maps.find((m: MapRecord) => m.id === currentMapId) ?? data.maps[0];
+          const sanitizedMaps = data.maps.map((m: MapRecord) => ({
+            ...m,
+            name: normalizeMapName(m.name),
+          }));
+          const currentMapId = data.currentMapId ?? sanitizedMaps[0].id;
+          const current = sanitizedMaps.find((m: MapRecord) => m.id === currentMapId) ?? sanitizedMaps[0];
           set({
-            maps: data.maps,
+            maps: sanitizedMaps,
             currentMapId: current.id,
             nodes: current.nodes,
             edges: current.edges,
@@ -295,9 +300,10 @@ export const useMindMapStore = create<MindMapStore>((set, get) => ({
 
   setMapName: (name) => {
     const s = get();
+    const nextName = normalizeMapName(name);
     set({
       maps: s.maps.map((m) =>
-        m.id === s.currentMapId ? { ...m, name, updatedAt: Date.now() } : m
+        m.id === s.currentMapId ? { ...m, name: nextName, updatedAt: Date.now() } : m
       ),
     });
     get().saveToLocalStorage();
