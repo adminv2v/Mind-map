@@ -7,6 +7,7 @@ import { UpdateNotification } from './components/UpdateNotification';
 import { SavePrompt } from './components/SavePrompt';
 import { InstallPWAModal } from './components/InstallPWAModal';
 import { SearchPanel } from './components/SearchPanel';
+import { Minimap } from './components/Minimap';
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
 import { useMindMapStore } from './store';
 import { registerServiceWorker, setupPWAInstallPrompt, isPWAInstalled } from './utils/pwa';
@@ -149,6 +150,7 @@ function App() {
         showInstallButton={!isPWAInstalled()}
       />
       <AddButton />
+      <Minimap />
 
       {contextMenu && (
         <ContextMenu
