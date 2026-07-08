@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'v1.0.0';
+const CACHE_VERSION = 'v1.0.1';
 const CACHE_NAME = `mindmap-pro-${CACHE_VERSION}`;
 const OFFLINE_URL = '/offline.html';
 
@@ -39,6 +39,25 @@ self.addEventListener('activate', (event) => {
 
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
+
+  if (event.request.mode === 'navigate') {
+    event.respondWith(
+      fetch(event.request)
+        .then((response) => {
+          const responseToCache = response.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(event.request, responseToCache);
+          });
+          return response;
+        })
+        .catch(() => {
+          return caches.match(event.request).then((cachedResponse) => {
+            return cachedResponse || caches.match(OFFLINE_URL);
+          });
+        })
+    );
+    return;
+  }
 
   if (event.request.url.includes('/functions/v1/') ||
       event.request.url.includes('supabase.co')) {
