@@ -3,7 +3,7 @@ import { Node as NodeType } from '../types';
 import { useMindMapStore } from '../store';
 import { screenToWorld } from '../utils/geometry';
 import { getLevelStyle, getLevelColor } from '../utils/levelStyles';
-import { Link, Paperclip, Plus, Check } from 'lucide-react';
+import { Paperclip, Check } from 'lucide-react';
 
 interface NodeProps {
   node: NodeType;
@@ -15,11 +15,7 @@ export const Node = ({ node }: NodeProps) => {
     selectNode,
     selectedNodes,
     viewport,
-    startConnection,
-    updateTempConnection,
-    endConnection,
     theme,
-    addAttachmentLinkToNode,
   } = useMindMapStore();
 
   const [isDragging, setIsDragging] = useState(false);
@@ -27,7 +23,6 @@ export const Node = ({ node }: NodeProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [editText, setEditText] = useState(node.text);
-  const [showHandle, setShowHandle] = useState(false);
   const [longPressTimer, setLongPressTimer] = useState<number | null>(null);
 
   const textRef = useRef<HTMLTextAreaElement>(null);
@@ -112,39 +107,6 @@ export const Node = ({ node }: NodeProps) => {
     selectNode(node.id);
   };
 
-  const handleConnectionStart = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    startConnection(node.id);
-
-    const handleMove = (moveEvent: MouseEvent) => {
-      const world = screenToWorld(moveEvent.clientX, moveEvent.clientY, viewport);
-      updateTempConnection(world);
-    };
-
-    const handleUp = (upEvent: MouseEvent) => {
-      const target = upEvent.target as HTMLElement;
-      const targetNodeId = target.getAttribute('data-node-id');
-      endConnection(targetNodeId);
-      window.removeEventListener('mousemove', handleMove);
-      window.removeEventListener('mouseup', handleUp);
-    };
-
-    window.addEventListener('mousemove', handleMove);
-    window.addEventListener('mouseup', handleUp);
-  };
-
-  const handleAttachmentClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    alert(
-      'To keep the mind map file small, first save your file online, for example in Google Drive, Dropbox, OneDrive, or another file host. Then paste the share link here.'
-    );
-    const url = window.prompt('Paste the online file link:');
-    if (!url?.trim()) return;
-
-    const name = window.prompt('Name for this link:', url.trim()) || url.trim();
-    addAttachmentLinkToNode(node.id, url.trim(), name.trim() || url.trim());
-  };
-
   const handleOpenAttachment = (e: React.MouseEvent) => {
     e.stopPropagation();
     const firstUrl = node.attachments?.[0]?.url;
@@ -190,11 +152,7 @@ export const Node = ({ node }: NodeProps) => {
   };
 
   return (
-    <g
-      data-node-id={node.id}
-      onMouseEnter={() => setShowHandle(true)}
-      onMouseLeave={() => setShowHandle(false)}
-    >
+    <g data-node-id={node.id}>
       <rect
         x={node.x}
         y={node.y}
@@ -334,55 +292,6 @@ export const Node = ({ node }: NodeProps) => {
             {node.attachments.length}
           </text>
           <title>{node.attachments.map((item) => item.name).join(', ')}</title>
-        </g>
-      )}
-
-      {(isSelected || showHandle) && (
-        <g>
-          <circle
-            cx={node.x + node.w}
-            cy={node.y + node.h / 2}
-            r={8}
-            fill={theme === 'dark' ? '#ff8c3a' : '#DC6300'}
-            stroke="white"
-            strokeWidth={2}
-            onMouseDown={handleConnectionStart}
-            className="cursor-pointer"
-            style={{ pointerEvents: 'all' }}
-          />
-          <foreignObject
-            x={node.x + node.w - 6}
-            y={node.y + node.h / 2 - 6}
-            width={12}
-            height={12}
-            pointerEvents="none"
-          >
-            <Link size={12} color="white" />
-          </foreignObject>
-
-          <g>
-            <circle
-              cx={node.x + node.w / 2}
-              cy={node.y + node.h + 20}
-              r={8}
-              fill={theme === 'dark' ? '#ff8c3a' : '#DC6300'}
-              stroke="white"
-              strokeWidth={2}
-              onClick={handleAttachmentClick}
-              className="cursor-pointer"
-              style={{ pointerEvents: 'all' }}
-            />
-            <foreignObject
-              x={node.x + node.w / 2 - 6}
-              y={node.y + node.h + 14}
-              width={12}
-              height={12}
-              pointerEvents="none"
-            >
-              <Plus size={12} color="white" />
-            </foreignObject>
-            <title>Add online file link</title>
-          </g>
         </g>
       )}
 
