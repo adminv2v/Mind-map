@@ -13,8 +13,9 @@ import {
   X,
   FileText,
   Image,
-  ChevronUp,
   ChevronDown,
+  ChevronLeft,
+  ChevronRight,
   Pencil,
   Check,
   Plus,
@@ -299,7 +300,7 @@ export const Toolbar = ({
           {!inPill && (
             <button
               onClick={() => setEditingName(true)}
-              className="opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-400 dark:text-gray-500 transition-all"
+              className="p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400 transition-all"
               aria-label="Rename mind map"
               title="Rename"
             >
@@ -446,7 +447,7 @@ export const Toolbar = ({
               title="Expand toolbar"
               aria-label="Expand toolbar"
             >
-              <ChevronDown size={14} />
+              <ChevronRight size={14} />
             </button>
           </div>
         ) : (
@@ -510,7 +511,7 @@ export const Toolbar = ({
 
             {/* Collapse */}
             <button onClick={() => setCollapsed(true)} className={btnCls} title="Collapse toolbar" aria-label="Collapse toolbar">
-              <ChevronUp size={16} />
+              <ChevronLeft size={16} />
             </button>
           </div>
         )}
