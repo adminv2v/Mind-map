@@ -54,33 +54,24 @@ export const detectPlatform = (): 'windows' | 'android' | 'macos' | 'ios' | 'oth
   return 'other';
 };
 
-export const registerServiceWorker = (onUpdateAvailable: () => void) => {
+export const registerServiceWorker = (_onUpdateAvailable: () => void) => {
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', async () => {
       try {
-        const registration = await navigator.serviceWorker.register('/service-worker.js');
+        const registrations = await navigator.serviceWorker.getRegistrations();
+        await Promise.all(registrations.map((registration) => registration.unregister()));
 
-        registration.addEventListener('updatefound', () => {
-          const newWorker = registration.installing;
-          if (!newWorker) return;
-
-          newWorker.addEventListener('statechange', () => {
-            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-              onUpdateAvailable();
-            }
-          });
-        });
-
-        let refreshing = false;
-        navigator.serviceWorker.addEventListener('controllerchange', () => {
-          if (refreshing) return;
-          refreshing = true;
-          window.location.reload();
-        });
-
+        if ('caches' in window) {
+          const cacheNames = await caches.keys();
+          await Promise.all(
+            cacheNames
+              .filter((name) => name.startsWith('mindmap-pro-'))
+              .map((name) => caches.delete(name))
+          );
+        }
       } catch (error) {
         // Service Worker not supported or failed to register
-        // This is OK - the app will still work without offline support
+        // This is OK - the app works as a normal website without offline caching.
         const message = error instanceof Error ? error.message : String(error);
         console.log('Service Worker not available:', message);
       }

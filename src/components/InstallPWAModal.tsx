@@ -213,8 +213,8 @@ export const InstallPWAModal = ({ isOpen, onClose }: InstallPWAModalProps) => {
               <ul className="text-xs text-orange-800 dark:text-orange-200 space-y-1 list-disc list-inside">
                 <li>Desktop/home screen icon for quick access</li>
                 <li>Runs in its own window without browser tabs</li>
-                <li>Works offline with your saved mind maps</li>
-                <li>Automatic updates when available</li>
+                <li>Loads the latest website version when opened</li>
+                <li>Your mind maps stay saved in this browser</li>
               </ul>
             </div>
 
