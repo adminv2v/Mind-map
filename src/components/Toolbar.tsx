@@ -281,11 +281,11 @@ export const Toolbar = ({
             onChange={(e) => setNameInput(e.target.value)}
             onKeyDown={handleNameKeyDown}
             onBlur={commitName}
-            className="text-sm font-semibold bg-transparent border-b border-blue-500 outline-none text-gray-800 dark:text-gray-100 w-36 sm:w-48"
+            className="text-sm font-semibold bg-transparent border-b border-accent-orange outline-none text-gray-800 dark:text-gray-100 w-36 sm:w-48"
             maxLength={60}
           />
           <button onClick={commitName} className={btnCls} aria-label="Confirm name">
-            <Check size={14} className="text-blue-500" />
+            <Check size={14} className="text-accent-orange" />
           </button>
         </div>
       ) : (
@@ -331,7 +331,7 @@ export const Toolbar = ({
                 key={m.id}
                 className={`flex items-center gap-2 px-3 py-2 group cursor-pointer transition-colors ${
                   m.id === currentMapId
-                    ? 'bg-blue-50 dark:bg-blue-900/30'
+                    ? 'bg-orange-50 dark:bg-orange-900/30'
                     : 'hover:bg-gray-50 dark:hover:bg-gray-700/50'
                 }`}
                 onClick={() => {
@@ -342,7 +342,7 @@ export const Toolbar = ({
               >
                 <Map
                   size={14}
-                  className={m.id === currentMapId ? 'text-blue-500' : 'text-gray-400 dark:text-gray-500'}
+                  className={m.id === currentMapId ? 'text-accent-orange' : 'text-gray-400 dark:text-gray-500'}
                 />
 
                 {renamingMapId === m.id ? (
@@ -353,14 +353,14 @@ export const Toolbar = ({
                     onKeyDown={(e) => handleRenameKeyDown(e, m.id)}
                     onBlur={() => commitRename(m.id)}
                     onClick={(e) => e.stopPropagation()}
-                    className="flex-1 text-sm bg-transparent border-b border-blue-500 outline-none text-gray-800 dark:text-gray-100"
+                    className="flex-1 text-sm bg-transparent border-b border-accent-orange outline-none text-gray-800 dark:text-gray-100"
                     maxLength={60}
                   />
                 ) : (
                   <span
                     className={`flex-1 text-sm truncate ${
                       m.id === currentMapId
-                        ? 'font-semibold text-blue-600 dark:text-blue-400'
+                        ? 'font-semibold text-accent-orange dark:text-orange-300'
                         : 'text-gray-700 dark:text-gray-300'
                     }`}
                   >

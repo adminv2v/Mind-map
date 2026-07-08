@@ -46,7 +46,7 @@ export const getLevelStyle = (level: number): LevelStyleConfig => {
 
 export const getLevelColor = (level: number, theme: 'light' | 'dark'): { fill: string; border: string } => {
   const lightColors = [
-    { fill: '#dbeafe', border: '#3b82f6' },
+    { fill: '#ffedd5', border: '#DC6300' },
     { fill: '#fef3c7', border: '#f59e0b' },
     { fill: '#d1fae5', border: '#10b981' },
     { fill: '#fce7f3', border: '#ec4899' },
@@ -55,7 +55,7 @@ export const getLevelColor = (level: number, theme: 'light' | 'dark'): { fill: s
   ];
 
   const darkColors = [
-    { fill: '#1e3a8a', border: '#60a5fa' },
+    { fill: '#7c2d12', border: '#ff8c3a' },
     { fill: '#78350f', border: '#fbbf24' },
     { fill: '#064e3b', border: '#34d399' },
     { fill: '#831843', border: '#f472b6' },

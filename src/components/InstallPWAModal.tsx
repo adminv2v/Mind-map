@@ -111,9 +111,9 @@ export const InstallPWAModal = ({ isOpen, onClose }: InstallPWAModalProps) => {
 
         <div className="p-6">
           {currentPlatform && (
-            <div className="mb-6 p-6 bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 rounded-xl border-2 border-blue-200 dark:border-blue-700">
+            <div className="mb-6 p-6 bg-gradient-to-r from-orange-50 to-orange-100 dark:from-orange-900/20 dark:to-orange-800/20 rounded-xl border-2 border-orange-200 dark:border-orange-700">
               <div className="flex items-center gap-4 mb-4">
-                <div className="w-12 h-12 bg-blue-600 dark:bg-amber-gold rounded-xl flex items-center justify-center text-white">
+                <div className="w-12 h-12 bg-accent-orange rounded-xl flex items-center justify-center text-white">
                   <currentPlatform.icon size={24} />
                 </div>
                 <div className="flex-1">
@@ -124,7 +124,7 @@ export const InstallPWAModal = ({ isOpen, onClose }: InstallPWAModalProps) => {
                     {currentPlatform.description}
                   </p>
                 </div>
-                <span className="px-3 py-1 bg-blue-600 dark:bg-amber-gold text-white text-xs font-semibold rounded-full">
+                <span className="px-3 py-1 bg-accent-orange text-white text-xs font-semibold rounded-full">
                   Your Device
                 </span>
               </div>
@@ -140,7 +140,7 @@ export const InstallPWAModal = ({ isOpen, onClose }: InstallPWAModalProps) => {
                       key={index}
                       className="flex items-start gap-3 text-sm text-gray-700 dark:text-gray-300"
                     >
-                      <span className="flex-shrink-0 w-6 h-6 bg-blue-600 dark:bg-amber-gold text-white rounded-full flex items-center justify-center text-xs font-bold">
+                      <span className="flex-shrink-0 w-6 h-6 bg-accent-orange text-white rounded-full flex items-center justify-center text-xs font-bold">
                         {index + 1}
                       </span>
                       <span className="pt-0.5">{step}</span>
@@ -154,7 +154,7 @@ export const InstallPWAModal = ({ isOpen, onClose }: InstallPWAModalProps) => {
                   <button
                     onClick={() => handleInstall(currentPlatform.id)}
                     disabled={installing}
-                    className="w-full px-6 py-3 bg-blue-600 hover:bg-blue-700 dark:bg-amber-gold dark:hover:bg-amber-gold/90 text-white font-semibold rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full px-6 py-3 bg-accent-orange hover:bg-accent-orange-light text-white font-semibold rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {installing ? 'Installing...' : 'Install Now'}
                   </button>
@@ -205,12 +205,12 @@ export const InstallPWAModal = ({ isOpen, onClose }: InstallPWAModalProps) => {
           )}
 
           <div className="mt-6 space-y-3">
-            <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-200 dark:border-blue-800">
-              <h4 className="font-semibold text-blue-900 dark:text-blue-100 mb-2 flex items-center gap-2">
+            <div className="p-4 bg-orange-50 dark:bg-orange-900/20 rounded-xl border border-orange-200 dark:border-orange-800">
+              <h4 className="font-semibold text-orange-900 dark:text-orange-100 mb-2 flex items-center gap-2">
                 <Chrome size={16} />
                 Desktop Icon & App Features
               </h4>
-              <ul className="text-xs text-blue-800 dark:text-blue-200 space-y-1 list-disc list-inside">
+              <ul className="text-xs text-orange-800 dark:text-orange-200 space-y-1 list-disc list-inside">
                 <li>Desktop/home screen icon for quick access</li>
                 <li>Runs in its own window without browser tabs</li>
                 <li>Works offline with your saved mind maps</li>

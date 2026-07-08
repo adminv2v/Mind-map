@@ -9,8 +9,8 @@ export interface NodeStyle {
 export interface FileAttachment {
   id: string;
   name: string;
-  path: string;
-  size: number;
+  url: string;
+  size?: number;
   type: string;
   uploadedAt: string;
 }

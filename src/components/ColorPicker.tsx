@@ -76,7 +76,7 @@ export const ColorPicker = ({ label, value, onChange }: ColorPickerProps) => {
       </label>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 flex items-center justify-between"
+        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 flex items-center justify-between"
       >
         <div className="flex items-center gap-2">
           <div
@@ -100,7 +100,7 @@ export const ColorPicker = ({ label, value, onChange }: ColorPickerProps) => {
                 }}
                 className={`w-6 h-6 rounded border transition-all hover:scale-125 hover:z-10 ${
                   value === color
-                    ? 'border-blue-500 ring-2 ring-blue-200'
+                    ? 'border-accent-orange ring-2 ring-orange-200'
                     : 'border-gray-300 dark:border-gray-600'
                 }`}
                 style={{ backgroundColor: color }}

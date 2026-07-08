@@ -41,7 +41,7 @@ export const Edge = ({ edge, tempEnd, isTemp = false }: EdgeProps) => {
 
   const isSelected = selectedEdges.includes(edge.id);
   const strokeColor = edge.color || (theme === 'dark' ? '#9ca3af' : '#6b7280');
-  const selectedColor = theme === 'dark' ? '#3b82f6' : '#2563eb';
+  const selectedColor = theme === 'dark' ? '#ff8c3a' : '#DC6300';
 
   const handleClick = (e: React.MouseEvent) => {
     if (!isTemp) {
@@ -60,7 +60,7 @@ export const Edge = ({ edge, tempEnd, isTemp = false }: EdgeProps) => {
         strokeDasharray={edge.lineStyle === 'dashed' ? '5,5' : undefined}
         markerEnd={edge.arrowType !== 'none' && !isTemp ? 'url(#arrowhead)' : undefined}
         onClick={handleClick}
-        className={isTemp ? '' : 'cursor-pointer hover:stroke-blue-500 transition-all'}
+        className={isTemp ? '' : 'cursor-pointer hover:stroke-orange-500 transition-all'}
         style={{ pointerEvents: 'stroke' }}
       />
 

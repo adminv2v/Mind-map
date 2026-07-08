@@ -23,7 +23,7 @@ export const WelcomeDialog = ({ onClose }: WelcomeDialogProps) => {
       style: {
         fill: theme === 'dark' ? '#1f2937' : '#ffffff',
         textColor: theme === 'dark' ? '#f9fafb' : '#111827',
-        borderColor: theme === 'dark' ? '#3b82f6' : '#2563eb',
+        borderColor: theme === 'dark' ? '#ff8c3a' : '#DC6300',
         radius: 20,
         shadow: true,
       },
@@ -106,7 +106,7 @@ export const WelcomeDialog = ({ onClose }: WelcomeDialogProps) => {
                     key={index}
                     className="flex gap-3 p-4 rounded-lg bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600"
                   >
-                    <feature.icon className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
+                    <feature.icon className="w-5 h-5 text-accent-orange dark:text-orange-300 flex-shrink-0 mt-0.5" />
                     <div>
                       <h3 className="font-semibold text-sm text-gray-900 dark:text-gray-100">
                         {feature.title}
@@ -120,11 +120,11 @@ export const WelcomeDialog = ({ onClose }: WelcomeDialogProps) => {
               </div>
             </div>
 
-            <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 mb-8 border border-blue-200 dark:border-blue-800">
-              <h3 className="font-semibold text-sm text-blue-900 dark:text-blue-100 mb-3">
+            <div className="bg-orange-50 dark:bg-orange-900/20 rounded-lg p-4 mb-8 border border-orange-200 dark:border-orange-800">
+              <h3 className="font-semibold text-sm text-orange-900 dark:text-orange-100 mb-3">
                 How to Use
               </h3>
-              <ul className="text-xs text-blue-800 dark:text-blue-200 space-y-2">
+              <ul className="text-xs text-orange-800 dark:text-orange-200 space-y-2">
                 <li className="flex gap-2">
                   <span className="font-semibold">•</span>
                   <span><strong>Create nodes:</strong> Click the + button or press Cmd/Ctrl+Enter</span>
@@ -162,7 +162,7 @@ export const WelcomeDialog = ({ onClose }: WelcomeDialogProps) => {
               </button>
               <button
                 onClick={() => setShowFeatures(false)}
-                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
+                className="flex-1 bg-accent-orange hover:bg-accent-orange-light text-white px-6 py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
               >
                 <PlusCircle size={18} />
                 Start Fresh
@@ -187,7 +187,7 @@ export const WelcomeDialog = ({ onClose }: WelcomeDialogProps) => {
                 value={topicText}
                 onChange={(e) => setTopicText(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleCreate()}
-                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                 placeholder="e.g., Project Planning, Study Notes, Ideas..."
                 autoFocus
               />
@@ -202,7 +202,7 @@ export const WelcomeDialog = ({ onClose }: WelcomeDialogProps) => {
               </button>
               <button
                 onClick={handleCreate}
-                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+                className="flex-1 bg-accent-orange hover:bg-accent-orange-light text-white px-6 py-3 rounded-lg font-medium transition-colors"
               >
                 Get Started
               </button>

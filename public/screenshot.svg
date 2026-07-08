@@ -7,12 +7,12 @@
   </defs>
   <rect width="1280" height="720" fill="url(#bgGrad)"/>
   <rect x="100" y="100" width="1080" height="520" fill="white" rx="20" opacity="0.95"/>
-  <circle cx="300" cy="360" r="60" fill="#3b82f6"/>
-  <circle cx="640" cy="240" r="60" fill="#3b82f6"/>
-  <circle cx="980" cy="360" r="60" fill="#3b82f6"/>
-  <circle cx="640" cy="480" r="60" fill="#3b82f6"/>
-  <line x1="300" y1="360" x2="640" y2="240" stroke="#3b82f6" stroke-width="4"/>
-  <line x1="640" y1="240" x2="980" y2="360" stroke="#3b82f6" stroke-width="4"/>
-  <line x1="300" y1="360" x2="640" y2="480" stroke="#3b82f6" stroke-width="4"/>
+  <circle cx="300" cy="360" r="60" fill="#DC6300"/>
+  <circle cx="640" cy="240" r="60" fill="#DC6300"/>
+  <circle cx="980" cy="360" r="60" fill="#DC6300"/>
+  <circle cx="640" cy="480" r="60" fill="#DC6300"/>
+  <line x1="300" y1="360" x2="640" y2="240" stroke="#DC6300" stroke-width="4"/>
+  <line x1="640" y1="240" x2="980" y2="360" stroke="#DC6300" stroke-width="4"/>
+  <line x1="300" y1="360" x2="640" y2="480" stroke="#DC6300" stroke-width="4"/>
   <circle cx="640" cy="360" r="80" fill="#1e40af"/>
 </svg>

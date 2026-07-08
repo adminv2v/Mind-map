@@ -38,7 +38,7 @@ export const AddButton = () => {
   return (
     <button
       onClick={handleAddButtonClick}
-      className="fixed bottom-6 right-6 sm:bottom-8 sm:right-8 w-14 h-14 sm:w-16 sm:h-16 bg-blue-500 hover:bg-blue-600 text-white rounded-full shadow-lg hover:shadow-xl transition-all flex items-center justify-center z-50"
+      className="fixed bottom-6 right-6 sm:bottom-8 sm:right-8 w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-accent-orange to-accent-orange-light text-white rounded-full shadow-lg shadow-orange-700/30 hover:shadow-xl hover:shadow-orange-700/40 transition-all flex items-center justify-center z-50"
       title="Add Node (Shift+N)"
       aria-label="Add Node"
     >

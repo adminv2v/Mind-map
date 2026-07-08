@@ -19,7 +19,7 @@ export const Node = ({ node }: NodeProps) => {
     updateTempConnection,
     endConnection,
     theme,
-    uploadFileToNode,
+    addAttachmentLinkToNode,
   } = useMindMapStore();
 
   const [isDragging, setIsDragging] = useState(false);
@@ -135,18 +135,22 @@ export const Node = ({ node }: NodeProps) => {
 
   const handleAttachmentClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.multiple = true;
-    input.onchange = (event) => {
-      const files = (event.target as HTMLInputElement).files;
-      if (files) {
-        Array.from(files).forEach((file) => {
-          uploadFileToNode(node.id, file);
-        });
-      }
-    };
-    input.click();
+    alert(
+      'To keep the mind map file small, first save your file online, for example in Google Drive, Dropbox, OneDrive, or another file host. Then paste the share link here.'
+    );
+    const url = window.prompt('Paste the online file link:');
+    if (!url?.trim()) return;
+
+    const name = window.prompt('Name for this link:', url.trim()) || url.trim();
+    addAttachmentLinkToNode(node.id, url.trim(), name.trim() || url.trim());
+  };
+
+  const handleOpenAttachment = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const firstUrl = node.attachments?.[0]?.url;
+    if (firstUrl) {
+      window.open(firstUrl, '_blank', 'noopener,noreferrer');
+    }
   };
 
   const levelStyle = getLevelStyle(node.level);
@@ -154,7 +158,7 @@ export const Node = ({ node }: NodeProps) => {
 
   const bgColor = node.completed ? '#1f2937' : (node.style.fill || levelColors.fill);
   const textColor = node.completed ? '#ffffff' : node.style.textColor;
-  const borderColor = node.completed ? '#6b7280' : (isSelected ? '#3b82f6' : (node.style.borderColor || levelColors.border));
+  const borderColor = node.completed ? '#6b7280' : (isSelected ? '#DC6300' : (node.style.borderColor || levelColors.border));
 
   const handleToggleComplete = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -300,10 +304,11 @@ export const Node = ({ node }: NodeProps) => {
             cx={node.x + node.w - 16}
             cy={node.y + 16}
             r={10}
-            fill={theme === 'dark' ? '#10b981' : '#059669'}
+            fill={theme === 'dark' ? '#ff8c3a' : '#DC6300'}
             stroke="white"
             strokeWidth={2}
             className="cursor-pointer"
+            onClick={handleOpenAttachment}
             style={{ pointerEvents: 'all' }}
           />
           <foreignObject
@@ -328,6 +333,7 @@ export const Node = ({ node }: NodeProps) => {
           >
             {node.attachments.length}
           </text>
+          <title>{node.attachments.map((item) => item.name).join(', ')}</title>
         </g>
       )}
 
@@ -337,7 +343,7 @@ export const Node = ({ node }: NodeProps) => {
             cx={node.x + node.w}
             cy={node.y + node.h / 2}
             r={8}
-            fill={theme === 'dark' ? '#3b82f6' : '#2563eb'}
+            fill={theme === 'dark' ? '#ff8c3a' : '#DC6300'}
             stroke="white"
             strokeWidth={2}
             onMouseDown={handleConnectionStart}
@@ -359,7 +365,7 @@ export const Node = ({ node }: NodeProps) => {
               cx={node.x + node.w / 2}
               cy={node.y + node.h + 20}
               r={8}
-              fill={theme === 'dark' ? '#8b5cf6' : '#7c3aed'}
+              fill={theme === 'dark' ? '#ff8c3a' : '#DC6300'}
               stroke="white"
               strokeWidth={2}
               onClick={handleAttachmentClick}
@@ -375,7 +381,7 @@ export const Node = ({ node }: NodeProps) => {
             >
               <Plus size={12} color="white" />
             </foreignObject>
-            <title>Add files or folder</title>
+            <title>Add online file link</title>
           </g>
         </g>
       )}
@@ -386,7 +392,7 @@ export const Node = ({ node }: NodeProps) => {
           y={node.y + node.h - 8}
           width={8}
           height={8}
-          fill={theme === 'dark' ? '#3b82f6' : '#2563eb'}
+          fill={theme === 'dark' ? '#ff8c3a' : '#DC6300'}
           stroke="white"
           strokeWidth={1}
           onMouseDown={handleResizeMouseDown}

@@ -110,7 +110,7 @@ export const SearchPanel = ({ isOpen, onClose }: SearchPanelProps) => {
             onClick={() => goToNode(node.id)}
             className={`flex w-full items-center gap-3 px-4 py-2 text-left text-sm transition-colors ${
               index === activeIndex
-                ? 'bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-200'
+                ? 'bg-orange-50 text-accent-orange dark:bg-orange-900/30 dark:text-orange-200'
                 : 'text-gray-700 hover:bg-gray-50 dark:text-gray-200 dark:hover:bg-gray-700/60'
             }`}
           >

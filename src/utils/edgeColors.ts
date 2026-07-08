@@ -1,6 +1,6 @@
 const levelColors: Record<number, string> = {
   0: '#8b5cf6',   // purple - same level
-  1: '#3b82f6',   // blue
+  1: '#DC6300',   // orange
   2: '#10b981',   // green
   3: '#06b6d4',   // cyan
   4: '#f59e0b',   // amber

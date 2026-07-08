@@ -82,7 +82,7 @@ interface MindMapStore {
   // Node helpers
   duplicateNode: (id: string) => void;
   addChildNode: (parentId: string) => void;
-  uploadFileToNode: (nodeId: string, file: File) => void;
+  addAttachmentLinkToNode: (nodeId: string, url: string, name: string) => void;
   autoLayout: () => void;
 
   // Map management
@@ -557,13 +557,12 @@ export const useMindMapStore = create<MindMapStore>((set, get) => ({
     }
   },
 
-  uploadFileToNode: (nodeId, file) => {
+  addAttachmentLinkToNode: (nodeId, url, name) => {
     const attachment: FileAttachment = {
       id: `file-${makeId()}`,
-      name: file.name,
-      path: '',
-      size: file.size,
-      type: file.type,
+      name,
+      url,
+      type: 'link',
       uploadedAt: new Date().toISOString(),
     };
 

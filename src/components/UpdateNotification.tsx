@@ -31,7 +31,7 @@ export const UpdateNotification = ({ show }: UpdateNotificationProps) => {
         isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
       }`}
     >
-      <div className="bg-gradient-to-r from-blue-600 to-blue-700 dark:from-amber-gold dark:to-amber-gold/90 text-white rounded-2xl shadow-2xl px-6 py-4 flex items-center gap-4 min-w-[320px] max-w-[500px]">
+      <div className="bg-gradient-to-r from-accent-orange to-accent-orange-light text-white rounded-2xl shadow-2xl px-6 py-4 flex items-center gap-4 min-w-[320px] max-w-[500px]">
         <div className="flex-1">
           <p className="text-sm font-semibold mb-1">Update Available</p>
           <p className="text-xs opacity-90">
@@ -40,7 +40,7 @@ export const UpdateNotification = ({ show }: UpdateNotificationProps) => {
         </div>
         <button
           onClick={handleReload}
-          className="px-4 py-2 bg-white text-blue-600 dark:text-amber-gold rounded-lg font-semibold text-sm hover:bg-gray-100 transition-colors"
+          className="px-4 py-2 bg-white text-accent-orange rounded-lg font-semibold text-sm hover:bg-gray-100 transition-colors"
         >
           Reload Now
         </button>
