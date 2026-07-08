@@ -47,7 +47,6 @@ export const Toolbar = ({
     importData,
     toolbarPosition,
     setToolbarPosition,
-    mapName,
     setMapName,
     maps,
     currentMapId,
@@ -73,6 +72,7 @@ export const Toolbar = ({
 
   const canUndo = historyIndex > 0;
   const canRedo = historyIndex < history.length - 1;
+  const mapName = maps.find((map) => map.id === currentMapId)?.name ?? 'Untitled Mind Map';
 
   useEffect(() => {
     setNameInput(mapName);
