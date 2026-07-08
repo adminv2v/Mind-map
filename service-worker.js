@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'v1.0.1';
+const CACHE_VERSION = 'v1.0.2';
 const CACHE_NAME = `mindmap-pro-${CACHE_VERSION}`;
 const OFFLINE_URL = '/offline.html';
 
