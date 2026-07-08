@@ -9,6 +9,7 @@ export const useKeyboardShortcuts = () => {
     deleteEdge,
     duplicateNode,
     addChildNode,
+    autoLayout,
     selectedNodes,
     selectedEdges,
     setViewport,
@@ -60,6 +61,9 @@ export const useKeyboardShortcuts = () => {
         a.download = `mindmap-${Date.now()}.json`;
         a.click();
         URL.revokeObjectURL(url);
+      } else if (e.key.toLowerCase() === 'l' && !isInputFocused()) {
+        e.preventDefault();
+        autoLayout();
       }
     };
 
@@ -72,6 +76,7 @@ export const useKeyboardShortcuts = () => {
     deleteEdge,
     duplicateNode,
     addChildNode,
+    autoLayout,
     selectedNodes,
     selectedEdges,
     setViewport,

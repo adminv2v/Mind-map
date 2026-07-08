@@ -5,7 +5,9 @@ import {
   Sun,
   FolderOpen,
   HelpCircle,
+  GitBranch,
   GripVertical,
+  Search,
   Save,
   Smartphone,
   X,
@@ -24,10 +26,15 @@ import { useMindMapStore } from '../store';
 
 interface ToolbarProps {
   onShowInstallModal?: () => void;
+  onShowSearch?: () => void;
   showInstallButton?: boolean;
 }
 
-export const Toolbar = ({ onShowInstallModal, showInstallButton = false }: ToolbarProps) => {
+export const Toolbar = ({
+  onShowInstallModal,
+  onShowSearch,
+  showInstallButton = false,
+}: ToolbarProps) => {
   const {
     undo,
     redo,
@@ -46,6 +53,7 @@ export const Toolbar = ({ onShowInstallModal, showInstallButton = false }: Toolb
     createMap,
     switchMap,
     deleteMap,
+    autoLayout,
   } = useMindMapStore();
 
   const [isDragging, setIsDragging] = useState(false);
@@ -478,6 +486,12 @@ export const Toolbar = ({ onShowInstallModal, showInstallButton = false }: Toolb
             </button>
             <button onClick={handleImport} className={btnCls} title="Import" aria-label="Import">
               <FolderOpen size={16} />
+            </button>
+            <button onClick={autoLayout} className={btnCls} title="Auto Layout (L)" aria-label="Auto Layout">
+              <GitBranch size={16} />
+            </button>
+            <button onClick={onShowSearch} className={btnCls} title="Search (Cmd/Ctrl+F)" aria-label="Search">
+              <Search size={16} />
             </button>
             <button onClick={handleHelp} className={btnCls} title="Help" aria-label="Help">
               <HelpCircle size={16} />

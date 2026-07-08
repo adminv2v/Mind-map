@@ -83,6 +83,7 @@ interface MindMapStore {
   duplicateNode: (id: string) => void;
   addChildNode: (parentId: string) => void;
   uploadFileToNode: (nodeId: string, file: File) => void;
+  autoLayout: () => void;
 
   // Map management
   setMapName: (name: string) => void;
@@ -574,6 +575,116 @@ export const useMindMapStore = create<MindMapStore>((set, get) => ({
       ),
     }));
     get().saveHistory();
+    get().saveToLocalStorage();
+  },
+
+  autoLayout: () => {
+    const state = get();
+    if (state.nodes.length < 2) return;
+
+    get().saveHistory();
+
+    let rootId = state.nodes[0].id;
+    let maxConnections = -1;
+    state.nodes.forEach((node) => {
+      const connectionCount = state.edges.filter(
+        (edge) => edge.from === node.id || edge.to === node.id
+      ).length;
+      if (connectionCount > maxConnections) {
+        maxConnections = connectionCount;
+        rootId = node.id;
+      }
+    });
+
+    const nodeMap = new Map(state.nodes.map((node) => [node.id, node]));
+    const placed = new Set<string>();
+    const positions = new Map<string, { x: number; y: number }>();
+    const centerX = (window.innerWidth / 2 - state.viewport.x) / state.viewport.zoom;
+    const centerY = (window.innerHeight / 2 - state.viewport.y) / state.viewport.zoom;
+
+    const neighborsFor = (id: string) =>
+      state.edges
+        .filter((edge) => edge.from === id || edge.to === id)
+        .map((edge) => (edge.from === id ? edge.to : edge.from))
+        .filter((neighborId) => !placed.has(neighborId));
+
+    const placeNode = (
+      id: string,
+      x: number,
+      y: number,
+      level: number,
+      angleStart: number,
+      angleEnd: number
+    ) => {
+      const node = nodeMap.get(id);
+      if (!node || placed.has(id)) return;
+
+      placed.add(id);
+      positions.set(id, { x: x - node.w / 2, y: y - node.h / 2 });
+
+      const children = neighborsFor(id);
+      if (!children.length) return;
+
+      const step = (angleEnd - angleStart) / children.length;
+      const radius = 180 + level * 90;
+      children.forEach((childId, index) => {
+        const angle = angleStart + step * index + step / 2;
+        placeNode(
+          childId,
+          x + Math.cos(angle) * radius,
+          y + Math.sin(angle) * radius,
+          level + 1,
+          angle - step / 2,
+          angle + step / 2
+        );
+      });
+    };
+
+    placeNode(rootId, centerX, centerY, 1, 0, Math.PI * 2);
+
+    let floatingX = centerX - 320;
+    let floatingY = centerY + 320;
+    state.nodes.forEach((node) => {
+      if (!placed.has(node.id)) {
+        positions.set(node.id, { x: floatingX, y: floatingY });
+        floatingX += node.w + 60;
+      }
+    });
+
+    const nodes = state.nodes.map((node) => {
+      const next = positions.get(node.id);
+      return next ? { ...node, x: next.x, y: next.y } : node;
+    });
+
+    const bounds = nodes.reduce(
+      (acc, node) => ({
+        minX: Math.min(acc.minX, node.x),
+        minY: Math.min(acc.minY, node.y),
+        maxX: Math.max(acc.maxX, node.x + node.w),
+        maxY: Math.max(acc.maxY, node.y + node.h),
+      }),
+      { minX: Infinity, minY: Infinity, maxX: -Infinity, maxY: -Infinity }
+    );
+
+    const width = Math.max(1, bounds.maxX - bounds.minX);
+    const height = Math.max(1, bounds.maxY - bounds.minY);
+    const padding = 120;
+    const zoom = Math.max(
+      0.2,
+      Math.min(
+        1.5,
+        Math.min(window.innerWidth / (width + padding), window.innerHeight / (height + padding))
+      )
+    );
+
+    set({
+      nodes,
+      viewport: {
+        zoom,
+        x: window.innerWidth / 2 - ((bounds.minX + bounds.maxX) / 2) * zoom,
+        y: window.innerHeight / 2 - ((bounds.minY + bounds.maxY) / 2) * zoom,
+      },
+    });
     get().saveToLocalStorage();
   },
 }));

@@ -7,6 +7,7 @@ import { ContextMenu } from './components/ContextMenu';
 import { UpdateNotification } from './components/UpdateNotification';
 import { SavePrompt } from './components/SavePrompt';
 import { InstallPWAModal } from './components/InstallPWAModal';
+import { SearchPanel } from './components/SearchPanel';
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
 import { useMindMapStore } from './store';
 import { registerServiceWorker, setupPWAInstallPrompt, isPWAInstalled } from './utils/pwa';
@@ -21,8 +22,29 @@ function App() {
   } | null>(null);
   const [updateAvailable, setUpdateAvailable] = useState(false);
   const [showInstallModal, setShowInstallModal] = useState(false);
+  const [showSearch, setShowSearch] = useState(false);
 
   useKeyboardShortcuts();
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      const isMac = navigator.platform.toUpperCase().includes('MAC');
+      const cmdOrCtrl = isMac ? event.metaKey : event.ctrlKey;
+
+      if (cmdOrCtrl && event.key.toLowerCase() === 'f') {
+        event.preventDefault();
+        setShowSearch(true);
+      }
+
+      if (event.key === 'Escape' && showSearch) {
+        event.preventDefault();
+        setShowSearch(false);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [showSearch]);
 
   useEffect(() => {
     registerServiceWorker(() => {
@@ -124,6 +146,7 @@ function App() {
       <Canvas />
       <Toolbar
         onShowInstallModal={() => setShowInstallModal(true)}
+        onShowSearch={() => setShowSearch(true)}
         showInstallButton={!isPWAInstalled()}
       />
       <AddButton />
@@ -141,6 +164,7 @@ function App() {
 
       <UpdateNotification show={updateAvailable} />
       <SavePrompt />
+      <SearchPanel isOpen={showSearch} onClose={() => setShowSearch(false)} />
 
       <InstallPWAModal
         isOpen={showInstallModal}
