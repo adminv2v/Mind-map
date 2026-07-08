@@ -56,6 +56,10 @@ export const Toolbar = ({
     autoLayout,
   } = useMindMapStore();
 
+  const canUndo = historyIndex > 0;
+  const canRedo = historyIndex < history.length - 1;
+  const mapName = maps.find((map) => map.id === currentMapId)?.name ?? 'Untitled Mind Map';
+
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [showSaveModal, setShowSaveModal] = useState(false);
@@ -69,10 +73,6 @@ export const Toolbar = ({
   const nameInputRef = useRef<HTMLInputElement>(null);
   const renameInputRef = useRef<HTMLInputElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
-
-  const canUndo = historyIndex > 0;
-  const canRedo = historyIndex < history.length - 1;
-  const mapName = maps.find((map) => map.id === currentMapId)?.name ?? 'Untitled Mind Map';
 
   useEffect(() => {
     setNameInput(mapName);
