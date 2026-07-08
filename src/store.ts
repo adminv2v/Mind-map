@@ -389,7 +389,6 @@ export const useMindMapStore = create<MindMapStore>((set, get) => ({
       return {
         selectedNodes: newSelectedNodes,
         selectedEdges: [],
-        sidebarOpen: newSelectedNodes.length === 1,
       };
     });
   },

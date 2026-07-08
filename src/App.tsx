@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { Canvas } from './components/Canvas';
 import { Toolbar } from './components/Toolbar';
 import { AddButton } from './components/AddButton';
-import { Sidebar } from './components/Sidebar';
 import { ContextMenu } from './components/ContextMenu';
 import { UpdateNotification } from './components/UpdateNotification';
 import { SavePrompt } from './components/SavePrompt';
@@ -150,7 +149,6 @@ function App() {
         showInstallButton={!isPWAInstalled()}
       />
       <AddButton />
-      <Sidebar />
 
       {contextMenu && (
         <ContextMenu
