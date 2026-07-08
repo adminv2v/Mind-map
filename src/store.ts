@@ -358,32 +358,36 @@ export const useMindMapStore = create<MindMapStore>((set, get) => ({
           : [...state.selectedNodes, id]
         : [id];
 
-      if (multi && newSelectedNodes.length >= 2) {
-        const otherSelected = state.selectedNodes.filter((nid) => nid !== id);
-        otherSelected.forEach((otherId) => {
-          const existing = state.edges.find(
-            (e) =>
-              (e.from === id && e.to === otherId) ||
-              (e.from === otherId && e.to === id)
-          );
-          if (existing) {
-            get().deleteEdge(existing.id);
-          } else {
-            const fromNode = state.nodes.find((n) => n.id === id);
-            const toNode = state.nodes.find((n) => n.id === otherId);
-            if (fromNode && toNode) {
-              get().addEdge({
-                id: `edge-${makeId()}`,
-                from: id,
-                to: otherId,
-                style: 'curved',
-                lineStyle: 'solid',
-                arrowType: 'single',
-                color: getEdgeColor(fromNode.level, toNode.level),
-              });
-            }
+      if (multi && newSelectedNodes.length === 2) {
+        const [firstId, secondId] = newSelectedNodes;
+        const existing = state.edges.find(
+          (e) =>
+            (e.from === firstId && e.to === secondId) ||
+            (e.from === secondId && e.to === firstId)
+        );
+
+        if (existing) {
+          get().deleteEdge(existing.id);
+        } else {
+          const fromNode = state.nodes.find((n) => n.id === firstId);
+          const toNode = state.nodes.find((n) => n.id === secondId);
+          if (fromNode && toNode) {
+            get().addEdge({
+              id: `edge-${makeId()}`,
+              from: firstId,
+              to: secondId,
+              style: 'curved',
+              lineStyle: 'solid',
+              arrowType: 'single',
+              color: getEdgeColor(fromNode.level, toNode.level),
+            });
           }
-        });
+        }
+
+        return {
+          selectedNodes: [],
+          selectedEdges: [],
+        };
       }
 
       return {
