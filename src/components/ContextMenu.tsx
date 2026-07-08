@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import {
   Check,
   Edit,
@@ -24,6 +24,7 @@ interface ContextMenuProps {
 
 export const ContextMenu = ({ x, y, nodeId, edgeId, onClose }: ContextMenuProps) => {
   const menuRef = useRef<HTMLDivElement>(null);
+  const [menuPosition, setMenuPosition] = useState({ left: x, top: y });
   const [openColorSection, setOpenColorSection] = useState<'fill' | 'border' | 'text' | null>(null);
   const [customColor, setCustomColor] = useState('#DC6300');
   const [customColors, setCustomColors] = useState<string[]>(() => {
@@ -47,6 +48,26 @@ export const ContextMenu = ({ x, y, nodeId, edgeId, onClose }: ContextMenuProps)
     updateNode,
     updateEdge,
   } = useMindMapStore();
+
+  useLayoutEffect(() => {
+    const keepMenuInView = () => {
+      if (!menuRef.current) return;
+
+      const margin = 8;
+      const rect = menuRef.current.getBoundingClientRect();
+      const maxLeft = window.innerWidth - rect.width - margin;
+      const maxTop = window.innerHeight - rect.height - margin;
+
+      setMenuPosition({
+        left: Math.max(margin, Math.min(x, maxLeft)),
+        top: Math.max(margin, Math.min(y, maxTop)),
+      });
+    };
+
+    keepMenuInView();
+    window.addEventListener('resize', keepMenuInView);
+    return () => window.removeEventListener('resize', keepMenuInView);
+  }, [x, y, nodeId, edgeId, openColorSection, customColors.length]);
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -257,7 +278,7 @@ export const ContextMenu = ({ x, y, nodeId, edgeId, onClose }: ContextMenuProps)
       <div
         ref={menuRef}
         className="fixed bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 py-1 z-50 w-64 max-h-[90vh] overflow-y-auto"
-        style={{ left: x, top: y }}
+        style={menuPosition}
       >
         <button
           onClick={() => handleAction(promptForText)}
@@ -379,7 +400,7 @@ export const ContextMenu = ({ x, y, nodeId, edgeId, onClose }: ContextMenuProps)
       <div
         ref={menuRef}
         className="fixed bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 py-1 z-50 min-w-48"
-        style={{ left: x, top: y }}
+        style={menuPosition}
       >
         <button
           onClick={() => {
