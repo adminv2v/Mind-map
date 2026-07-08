@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Generate Icons</title>
+</head>
+<body>
+  <canvas id="canvas192" width="192" height="192"></canvas>
+  <canvas id="canvas512" width="512" height="512"></canvas>
+  <canvas id="canvasScreenshot" width="1280" height="720"></canvas>
+
+  <script>
+    function createIcon(canvas, size) {
+      const ctx = canvas.getContext('2d');
+
+      const gradient = ctx.createLinearGradient(0, 0, size, size);
+      gradient.addColorStop(0, '#DC6300');
+      gradient.addColorStop(1, '#1e40af');
+
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, size, size);
+
+      ctx.fillStyle = 'white';
+      ctx.font = `bold ${size * 0.3}px Arial`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('MM', size / 2, size / 2);
+
+      return canvas.toDataURL('image/png');
+    }
+
+    function createScreenshot(canvas) {
+      const ctx = canvas.getContext('2d');
+      const w = canvas.width;
+      const h = canvas.height;
+
+      const gradient = ctx.createLinearGradient(0, 0, w, h);
+      gradient.addColorStop(0, '#667eea');
+      gradient.addColorStop(1, '#764ba2');
+
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, w, h);
+
+      ctx.fillStyle = 'white';
+      ctx.font = 'bold 72px Arial';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('Mind Map Pro', w / 2, h / 2 - 50);
+
+      ctx.font = '36px Arial';
+      ctx.fillText('Professional Collaborative Diagramming', w / 2, h / 2 + 50);
+
+      return canvas.toDataURL('image/png');
+    }
+
+    const icon192 = createIcon(document.getElementById('canvas192'), 192);
+    const icon512 = createIcon(document.getElementById('canvas512'), 512);
+    const screenshot = createScreenshot(document.getElementById('canvasScreenshot'));
+
+    console.log('Icons generated. Download them by right-clicking on the canvases.');
+  </script>
+</body>
+</html>
