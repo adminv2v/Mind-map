@@ -142,6 +142,30 @@ export const Canvas = () => {
   };
 
   const startNode = connectionStart ? nodes.find((n) => n.id === connectionStart) : null;
+  const hiddenNodeIds = new Set<string>();
+
+  nodes.forEach((node) => {
+    if (!node.collapsed) return;
+
+    const stack = edges
+      .filter((edge) => edge.from === node.id)
+      .map((edge) => edge.to);
+
+    while (stack.length > 0) {
+      const childId = stack.pop();
+      if (!childId || hiddenNodeIds.has(childId)) continue;
+
+      hiddenNodeIds.add(childId);
+      edges
+        .filter((edge) => edge.from === childId)
+        .forEach((edge) => stack.push(edge.to));
+    }
+  });
+
+  const visibleNodes = nodes.filter((node) => !hiddenNodeIds.has(node.id));
+  const visibleEdges = edges.filter(
+    (edge) => !hiddenNodeIds.has(edge.from) && !hiddenNodeIds.has(edge.to)
+  );
 
   return (
     <svg
@@ -173,7 +197,7 @@ export const Canvas = () => {
       <g transform={`translate(${viewport.x}, ${viewport.y}) scale(${viewport.zoom})`}>
         <Grid viewport={viewport} dimensions={dimensions} theme={theme} />
 
-        {edges.map((edge) => (
+        {visibleEdges.map((edge) => (
           <EdgeComponent key={edge.id} edge={edge} />
         ))}
 
@@ -191,7 +215,7 @@ export const Canvas = () => {
           />
         )}
 
-        {nodes.map((node) => (
+        {visibleNodes.map((node) => (
           <NodeComponent key={node.id} node={node} />
         ))}
       </g>

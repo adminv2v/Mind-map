@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   Check,
   Edit,
@@ -24,6 +24,16 @@ interface ContextMenuProps {
 
 export const ContextMenu = ({ x, y, nodeId, edgeId, onClose }: ContextMenuProps) => {
   const menuRef = useRef<HTMLDivElement>(null);
+  const [openColorSection, setOpenColorSection] = useState<'fill' | 'border' | 'text' | null>(null);
+  const [customColor, setCustomColor] = useState('#DC6300');
+  const [customColors, setCustomColors] = useState<string[]>(() => {
+    try {
+      const saved = localStorage.getItem('mindmap-custom-colors');
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
   const {
     addEdge,
     deleteNode,
@@ -73,10 +83,119 @@ export const ContextMenu = ({ x, y, nodeId, edgeId, onClose }: ContextMenuProps)
     '#3B7DD8',
     '#8b5cf6',
     '#ef4444',
+    ...customColors,
   ];
 
   const menuItemClass =
     'w-full px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-3 text-sm text-gray-700 dark:text-gray-300';
+
+  const normalizeHex = (value: string) => {
+    const trimmed = value.trim();
+    const withHash = trimmed.startsWith('#') ? trimmed : `#${trimmed}`;
+    return /^#[0-9a-fA-F]{6}$/.test(withHash) ? withHash.toUpperCase() : null;
+  };
+
+  const saveCustomColor = (color: string) => {
+    const normalized = normalizeHex(color);
+    if (!normalized) return null;
+
+    const nextColors = [normalized, ...customColors.filter((item) => item !== normalized)].slice(0, 12);
+    setCustomColors(nextColors);
+    localStorage.setItem('mindmap-custom-colors', JSON.stringify(nextColors));
+    return normalized;
+  };
+
+  const applyColor = (target: 'fill' | 'border' | 'text', color: string) => {
+    if (!node || !nodeId) return;
+
+    const styleKey =
+      target === 'fill' ? 'fill' : target === 'border' ? 'borderColor' : 'textColor';
+
+    updateNode(nodeId, {
+      style: {
+        ...node.style,
+        [styleKey]: color,
+      },
+    });
+  };
+
+  const applyCustomColor = (target: 'fill' | 'border' | 'text') => {
+    const normalized = saveCustomColor(customColor);
+    if (normalized) {
+      applyColor(target, normalized);
+      setOpenColorSection(null);
+      onClose();
+    } else {
+      alert('Please enter a valid hex color, for example #DC6300.');
+    }
+  };
+
+  const ColorSection = ({
+    title,
+    target,
+  }: {
+    title: string;
+    target: 'fill' | 'border' | 'text';
+  }) => (
+    <div className="px-4 py-2">
+      <div className="mb-2 flex items-center justify-between gap-2">
+        <div className="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+          {title}
+        </div>
+        <button
+          onClick={(event) => {
+            event.stopPropagation();
+            setOpenColorSection(openColorSection === target ? null : target);
+          }}
+          className="rounded border border-gray-300 px-2 py-1 text-xs text-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
+        >
+          Custom
+        </button>
+      </div>
+
+      <div className="grid grid-cols-6 gap-2">
+        {Array.from(new Set(colorChoices)).map((color) => (
+          <button
+            key={`${target}-${color}`}
+            onClick={() => handleAction(() => applyColor(target, color))}
+            className="h-6 w-6 rounded-full border border-gray-300 dark:border-gray-600"
+            style={{ backgroundColor: color }}
+            aria-label={`Set ${title.toLowerCase()} ${color}`}
+          />
+        ))}
+      </div>
+
+      {openColorSection === target && (
+        <div className="mt-3 rounded-lg border border-gray-200 bg-gray-50 p-3 dark:border-gray-700 dark:bg-gray-900/40">
+          <label className="mb-2 block text-xs font-medium text-gray-600 dark:text-gray-300">
+            Choose color
+          </label>
+          <div className="flex items-center gap-2">
+            <input
+              type="color"
+              value={normalizeHex(customColor) ?? '#DC6300'}
+              onChange={(event) => setCustomColor(event.target.value)}
+              className="h-9 w-11 cursor-pointer rounded border border-gray-300 bg-white p-1 dark:border-gray-600 dark:bg-gray-800"
+              aria-label="Color wheel"
+            />
+            <input
+              value={customColor}
+              onChange={(event) => setCustomColor(event.target.value)}
+              placeholder="#DC6300"
+              className="min-w-0 flex-1 rounded border border-gray-300 bg-white px-2 py-2 text-sm text-gray-900 outline-none focus:ring-2 focus:ring-orange-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
+              aria-label="Hex color code"
+            />
+          </div>
+          <button
+            onClick={() => applyCustomColor(target)}
+            className="mt-3 w-full rounded bg-accent-orange px-3 py-2 text-sm font-semibold text-white hover:bg-accent-orange-light"
+          >
+            Add Color
+          </button>
+        </div>
+      )}
+    </div>
+  );
 
   const promptForText = () => {
     if (!node || !nodeId) return;
@@ -238,68 +357,9 @@ export const ContextMenu = ({ x, y, nodeId, edgeId, onClose }: ContextMenuProps)
 
         <div className="h-px bg-gray-200 dark:bg-gray-700 my-1" />
 
-        <div className="px-4 py-2">
-          <div className="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-2">
-            Fill Color
-          </div>
-          <div className="grid grid-cols-6 gap-2">
-            {colorChoices.map((color) => (
-              <button
-                key={`fill-${color}`}
-                onClick={() =>
-                  handleAction(() =>
-                    updateNode(nodeId, { style: { ...node.style, fill: color } })
-                  )
-                }
-                className="h-6 w-6 rounded-full border border-gray-300 dark:border-gray-600"
-                style={{ backgroundColor: color }}
-                aria-label={`Set fill color ${color}`}
-              />
-            ))}
-          </div>
-        </div>
-
-        <div className="px-4 py-2">
-          <div className="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-2">
-            Border Color
-          </div>
-          <div className="grid grid-cols-6 gap-2">
-            {colorChoices.map((color) => (
-              <button
-                key={`border-${color}`}
-                onClick={() =>
-                  handleAction(() =>
-                    updateNode(nodeId, { style: { ...node.style, borderColor: color } })
-                  )
-                }
-                className="h-6 w-6 rounded-full border border-gray-300 dark:border-gray-600"
-                style={{ backgroundColor: color }}
-                aria-label={`Set border color ${color}`}
-              />
-            ))}
-          </div>
-        </div>
-
-        <div className="px-4 py-2">
-          <div className="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-2">
-            Text Color
-          </div>
-          <div className="grid grid-cols-6 gap-2">
-            {colorChoices.map((color) => (
-              <button
-                key={`text-${color}`}
-                onClick={() =>
-                  handleAction(() =>
-                    updateNode(nodeId, { style: { ...node.style, textColor: color } })
-                  )
-                }
-                className="h-6 w-6 rounded-full border border-gray-300 dark:border-gray-600"
-                style={{ backgroundColor: color }}
-                aria-label={`Set text color ${color}`}
-              />
-            ))}
-          </div>
-        </div>
+        <ColorSection title="Fill Color" target="fill" />
+        <ColorSection title="Border Color" target="border" />
+        <ColorSection title="Text Color" target="text" />
 
         <div className="h-px bg-gray-200 dark:bg-gray-700 my-1" />
 
