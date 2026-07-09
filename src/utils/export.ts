@@ -1,4 +1,9 @@
-export const exportToJPEG = async (svgElement: SVGSVGElement): Promise<void> => {
+import { filenameFromMapName } from './filenames';
+
+export const exportToJPEG = async (
+  svgElement: SVGSVGElement,
+  mapName?: string
+): Promise<void> => {
   return new Promise((resolve, reject) => {
     const svgData = new XMLSerializer().serializeToString(svgElement);
     const canvas = document.createElement('canvas');
@@ -27,7 +32,7 @@ export const exportToJPEG = async (svgElement: SVGSVGElement): Promise<void> => 
           const jpegUrl = URL.createObjectURL(blob);
           const a = document.createElement('a');
           a.href = jpegUrl;
-          a.download = `mindmap-pro-${Date.now()}.jpg`;
+          a.download = `${filenameFromMapName(mapName)}.jpg`;
           a.click();
           URL.revokeObjectURL(jpegUrl);
           resolve();
@@ -47,7 +52,10 @@ export const exportToJPEG = async (svgElement: SVGSVGElement): Promise<void> => 
   });
 };
 
-export const exportToPDF = async (svgElement: SVGSVGElement): Promise<void> => {
+export const exportToPDF = async (
+  svgElement: SVGSVGElement,
+  mapName?: string
+): Promise<void> => {
   const { jsPDF } = await import('jspdf');
 
   return new Promise((resolve, reject) => {
@@ -97,7 +105,7 @@ export const exportToPDF = async (svgElement: SVGSVGElement): Promise<void> => {
         const y = (pdfHeight - finalHeight) / 2;
 
         pdf.addImage(imgData, 'JPEG', x, y, finalWidth, finalHeight);
-        pdf.save(`mindmap-pro-${Date.now()}.pdf`);
+        pdf.save(`${filenameFromMapName(mapName)}.pdf`);
         resolve();
       } catch (err) {
         reject(err);
@@ -114,7 +122,10 @@ export const exportToPDF = async (svgElement: SVGSVGElement): Promise<void> => {
   });
 };
 
-export const exportToPNG = async (svgElement: SVGSVGElement): Promise<void> => {
+export const exportToPNG = async (
+  svgElement: SVGSVGElement,
+  mapName?: string
+): Promise<void> => {
   const svgData = new XMLSerializer().serializeToString(svgElement);
   const canvas = document.createElement('canvas');
   const ctx = canvas.getContext('2d');
@@ -134,7 +145,7 @@ export const exportToPNG = async (svgElement: SVGSVGElement): Promise<void> => {
         const pngUrl = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = pngUrl;
-        a.download = `mindmap-pro-${Date.now()}.png`;
+        a.download = `${filenameFromMapName(mapName)}.png`;
         a.click();
         URL.revokeObjectURL(pngUrl);
       }
@@ -144,13 +155,13 @@ export const exportToPNG = async (svgElement: SVGSVGElement): Promise<void> => {
   img.src = url;
 };
 
-export const exportToSVG = (svgElement: SVGSVGElement): void => {
+export const exportToSVG = (svgElement: SVGSVGElement, mapName?: string): void => {
   const svgData = new XMLSerializer().serializeToString(svgElement);
   const blob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `mindmap-pro-${Date.now()}.svg`;
+  a.download = `${filenameFromMapName(mapName)}.svg`;
   a.click();
   URL.revokeObjectURL(url);
 };

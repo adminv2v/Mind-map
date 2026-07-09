@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useMindMapStore } from '../store';
+import { filenameFromMapName } from '../utils/filenames';
 
 export const useKeyboardShortcuts = () => {
   const {
@@ -58,7 +59,7 @@ export const useKeyboardShortcuts = () => {
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `mindmap-${Date.now()}.json`;
+        a.download = `${filenameFromMapName(data.meta.mapName)}.json`;
         a.click();
         URL.revokeObjectURL(url);
       } else if (e.key.toLowerCase() === 'l' && !isInputFocused()) {

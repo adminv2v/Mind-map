@@ -24,6 +24,7 @@ import {
 } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import { useMindMapStore } from '../store';
+import { filenameFromMapName } from '../utils/filenames';
 
 interface ToolbarProps {
   onShowInstallModal?: () => void;
@@ -59,6 +60,7 @@ export const Toolbar = ({
   const canUndo = historyIndex > 0;
   const canRedo = historyIndex < history.length - 1;
   const mapName = maps.find((map) => map.id === currentMapId)?.name?.trim() || 'Untitled Mind Map';
+  const exportFilename = filenameFromMapName(mapName);
 
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
@@ -113,7 +115,7 @@ export const Toolbar = ({
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `${mapName.replace(/\s+/g, '-')}-${Date.now()}.json`;
+    a.download = `${exportFilename}.json`;
     a.click();
     URL.revokeObjectURL(url);
     setShowSaveModal(false);
@@ -124,14 +126,14 @@ export const Toolbar = ({
     if (svg) {
       try {
         const { exportToPDF } = await import('../utils/export');
-        await exportToPDF(svg);
+        await exportToPDF(svg, exportFilename);
         setTimeout(() => {
           const data = exportData();
           const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
           const url = URL.createObjectURL(blob);
           const a = document.createElement('a');
           a.href = url;
-          a.download = `${mapName.replace(/\s+/g, '-')}-${Date.now()}.json`;
+          a.download = `${exportFilename}.json`;
           a.click();
           URL.revokeObjectURL(url);
         }, 500);
@@ -148,14 +150,14 @@ export const Toolbar = ({
     if (svg) {
       try {
         const { exportToJPEG } = await import('../utils/export');
-        await exportToJPEG(svg);
+        await exportToJPEG(svg, exportFilename);
         setTimeout(() => {
           const data = exportData();
           const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
           const url = URL.createObjectURL(blob);
           const a = document.createElement('a');
           a.href = url;
-          a.download = `${mapName.replace(/\s+/g, '-')}-${Date.now()}.json`;
+          a.download = `${exportFilename}.json`;
           a.click();
           URL.revokeObjectURL(url);
         }, 500);
