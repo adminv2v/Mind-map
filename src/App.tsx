@@ -3,7 +3,6 @@ import { Canvas } from './components/Canvas';
 import { Toolbar } from './components/Toolbar';
 import { AddButton } from './components/AddButton';
 import { ContextMenu } from './components/ContextMenu';
-import { UpdateNotification } from './components/UpdateNotification';
 import { SavePrompt } from './components/SavePrompt';
 import { InstallPWAModal } from './components/InstallPWAModal';
 import { SearchPanel } from './components/SearchPanel';
@@ -11,6 +10,20 @@ import { Minimap } from './components/Minimap';
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
 import { useMindMapStore } from './store';
 import { registerServiceWorker, setupPWAInstallPrompt, isPWAInstalled } from './utils/pwa';
+
+interface LaunchFile {
+  getFile: () => Promise<File>;
+}
+
+interface LaunchParams {
+  files?: LaunchFile[];
+}
+
+interface WindowWithLaunchQueue extends Window {
+  launchQueue?: {
+    setConsumer: (consumer: (launchParams: LaunchParams) => void | Promise<void>) => void;
+  };
+}
 
 function App() {
   const { loadFromLocalStorage, theme, importData } = useMindMapStore();
@@ -20,7 +33,6 @@ function App() {
     nodeId?: string;
     edgeId?: string;
   } | null>(null);
-  const [updateAvailable, setUpdateAvailable] = useState(false);
   const [showInstallModal, setShowInstallModal] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
 
@@ -47,9 +59,7 @@ function App() {
   }, [showSearch]);
 
   useEffect(() => {
-    registerServiceWorker(() => {
-      setUpdateAvailable(true);
-    });
+    registerServiceWorker();
 
     setupPWAInstallPrompt(() => undefined);
 
@@ -84,8 +94,10 @@ function App() {
 
   useEffect(() => {
     const handleFileOpen = async () => {
-      if ('launchQueue' in window) {
-        (window as any).launchQueue.setConsumer(async (launchParams: any) => {
+      const browserWindow = window as WindowWithLaunchQueue;
+
+      if (browserWindow.launchQueue) {
+        browserWindow.launchQueue.setConsumer(async (launchParams) => {
           if (launchParams.files && launchParams.files.length > 0) {
             const file = launchParams.files[0];
             try {
@@ -162,7 +174,6 @@ function App() {
         />
       )}
 
-      <UpdateNotification show={updateAvailable} />
       <SavePrompt />
       <SearchPanel isOpen={showSearch} onClose={() => setShowSearch(false)} />
 

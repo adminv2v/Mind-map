@@ -83,7 +83,7 @@ export const Node = ({ node }: NodeProps) => {
         window.removeEventListener('mouseup', handleMouseUp);
       };
     }
-  }, [isDragging, isResizing, dragStart, node]);
+  }, [isDragging, isResizing, dragStart, node, handleMouseMove, handleMouseUp]);
 
   const handleDoubleClick = (e: React.MouseEvent) => {
     e.stopPropagation();

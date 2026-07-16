@@ -667,7 +667,7 @@ export const useMindMapStore = create<MindMapStore>((set, get) => ({
     placeNode(rootId, centerX, centerY, 1, 0, Math.PI * 2);
 
     let floatingX = centerX - 320;
-    let floatingY = centerY + 320;
+    const floatingY = centerY + 320;
     state.nodes.forEach((node) => {
       if (!placed.has(node.id)) {
         positions.set(node.id, { x: floatingX, y: floatingY });

@@ -5,6 +5,10 @@ export interface BeforeInstallPromptEvent extends Event {
 
 let deferredPrompt: BeforeInstallPromptEvent | null = null;
 
+interface NavigatorWithStandalone extends Navigator {
+  standalone?: boolean;
+}
+
 export const setupPWAInstallPrompt = (callback: (event: BeforeInstallPromptEvent) => void) => {
   window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
@@ -27,7 +31,7 @@ export const showInstallPrompt = async (): Promise<boolean> => {
 
 export const isPWAInstalled = (): boolean => {
   return window.matchMedia('(display-mode: standalone)').matches ||
-         (window.navigator as any).standalone === true ||
+         (window.navigator as NavigatorWithStandalone).standalone === true ||
          document.referrer.includes('android-app://');
 };
 
@@ -54,7 +58,7 @@ export const detectPlatform = (): 'windows' | 'android' | 'macos' | 'ios' | 'oth
   return 'other';
 };
 
-export const registerServiceWorker = (_onUpdateAvailable: () => void) => {
+export const registerServiceWorker = () => {
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', async () => {
       try {
@@ -76,11 +80,5 @@ export const registerServiceWorker = (_onUpdateAvailable: () => void) => {
         console.log('Service Worker not available:', message);
       }
     });
-  }
-};
-
-export const activateUpdate = () => {
-  if (navigator.serviceWorker.controller) {
-    navigator.serviceWorker.controller.postMessage({ type: 'SKIP_WAITING' });
   }
 };

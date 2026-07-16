@@ -235,7 +235,7 @@ export const Toolbar = ({
         window.removeEventListener('mouseup', handleDragEnd);
       };
     }
-  }, [isDragging, dragStart, toolbarPosition]);
+  }, [isDragging, dragStart, toolbarPosition, handleDragMove]);
 
   const commitName = () => {
     const trimmed = nameInput.trim() || 'Untitled Mind Map';

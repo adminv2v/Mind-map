@@ -1,6 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useMindMapStore } from '../store';
 
+interface NavigatorWithStandalone extends Navigator {
+  standalone?: boolean;
+}
+
 export const SavePrompt = () => {
   const { exportData, nodes, edges } = useMindMapStore();
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
@@ -8,7 +12,7 @@ export const SavePrompt = () => {
 
   useEffect(() => {
     const isInStandaloneMode = window.matchMedia('(display-mode: standalone)').matches;
-    const isIOSPWA = (window.navigator as any).standalone === true;
+    const isIOSPWA = (window.navigator as NavigatorWithStandalone).standalone === true;
     setIsPWA(isInStandaloneMode || isIOSPWA);
   }, []);
 
