@@ -204,21 +204,69 @@ export const Canvas = () => {
       <g transform={`translate(${viewport.x}, ${viewport.y}) scale(${viewport.zoom})`}>
         <Grid viewport={viewport} dimensions={dimensions} theme={theme} />
 
-        {alignmentGuides.map((guide) => (
-          <line
-            key={`${guide.orientation}-${guide.position}`}
-            x1={guide.orientation === 'vertical' ? guide.position : visibleWorldBounds.left}
-            y1={guide.orientation === 'vertical' ? visibleWorldBounds.top : guide.position}
-            x2={guide.orientation === 'vertical' ? guide.position : visibleWorldBounds.right}
-            y2={guide.orientation === 'vertical' ? visibleWorldBounds.bottom : guide.position}
-            stroke={theme === 'dark' ? '#ffb36b' : '#DC6300'}
-            strokeWidth={1.5}
-            strokeDasharray="8 6"
-            opacity={0.85}
-            vectorEffect="non-scaling-stroke"
-            pointerEvents="none"
-          />
-        ))}
+        {alignmentGuides.map((guide, index) => {
+          const guideColor = theme === 'dark' ? '#ffb36b' : '#DC6300';
+
+          if (guide.type === 'spacing') {
+            const isVerticalSpacing = guide.orientation === 'vertical';
+            const start = guide.start ?? 0;
+            const end = guide.end ?? 0;
+            const crossStart = guide.crossStart ?? 0;
+            const crossEnd = guide.crossEnd ?? 0;
+            const labelX = isVerticalSpacing
+              ? (start + end) / 2
+              : (crossStart + crossEnd) / 2;
+            const labelY = isVerticalSpacing
+              ? (crossStart + crossEnd) / 2
+              : (start + end) / 2;
+
+            return (
+              <g key={`spacing-${guide.orientation}-${index}`} pointerEvents="none">
+                <line
+                  x1={isVerticalSpacing ? start : crossStart}
+                  y1={isVerticalSpacing ? crossStart : start}
+                  x2={isVerticalSpacing ? end : crossEnd}
+                  y2={isVerticalSpacing ? crossEnd : end}
+                  stroke={guideColor}
+                  strokeWidth={1.25}
+                  strokeDasharray="2 5"
+                  opacity={0.9}
+                  vectorEffect="non-scaling-stroke"
+                />
+                <text
+                  x={labelX}
+                  y={labelY - 8 / viewport.zoom}
+                  fill={guideColor}
+                  fontSize={12 / viewport.zoom}
+                  fontWeight={700}
+                  textAnchor="middle"
+                  dominantBaseline="middle"
+                  paintOrder="stroke"
+                  stroke={theme === 'dark' ? '#111827' : '#ffffff'}
+                  strokeWidth={3 / viewport.zoom}
+                >
+                  {guide.label}
+                </text>
+              </g>
+            );
+          }
+
+          return (
+            <line
+              key={`alignment-${guide.orientation}-${guide.position}`}
+              x1={guide.orientation === 'vertical' ? guide.position : visibleWorldBounds.left}
+              y1={guide.orientation === 'vertical' ? visibleWorldBounds.top : guide.position}
+              x2={guide.orientation === 'vertical' ? guide.position : visibleWorldBounds.right}
+              y2={guide.orientation === 'vertical' ? visibleWorldBounds.bottom : guide.position}
+              stroke={guideColor}
+              strokeWidth={1.5}
+              strokeDasharray="8 6"
+              opacity={0.85}
+              vectorEffect="non-scaling-stroke"
+              pointerEvents="none"
+            />
+          );
+        })}
 
         {visibleEdges.map((edge) => (
           <EdgeComponent key={edge.id} edge={edge} />

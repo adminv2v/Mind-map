@@ -8,8 +8,14 @@ interface HistoryState {
 }
 
 export interface AlignmentGuide {
+  type: 'alignment' | 'spacing';
   orientation: 'vertical' | 'horizontal';
-  position: number;
+  position?: number;
+  start?: number;
+  end?: number;
+  crossStart?: number;
+  crossEnd?: number;
+  label?: string;
 }
 
 export interface MapRecord {
