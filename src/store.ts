@@ -16,6 +16,7 @@ export interface AlignmentGuide {
   crossStart?: number;
   crossEnd?: number;
   label?: string;
+  isEqual?: boolean;
 }
 
 export interface MapRecord {

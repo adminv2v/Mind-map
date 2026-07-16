@@ -228,9 +228,9 @@ export const Canvas = () => {
                   x2={isVerticalSpacing ? end : crossEnd}
                   y2={isVerticalSpacing ? crossEnd : end}
                   stroke={guideColor}
-                  strokeWidth={1.25}
-                  strokeDasharray="2 5"
-                  opacity={0.9}
+                  strokeWidth={guide.isEqual ? 2 : 1.25}
+                  strokeDasharray={guide.isEqual ? '4 4' : '2 5'}
+                  opacity={guide.isEqual ? 1 : 0.82}
                   vectorEffect="non-scaling-stroke"
                 />
                 <text
@@ -238,7 +238,7 @@ export const Canvas = () => {
                   y={labelY - 8 / viewport.zoom}
                   fill={guideColor}
                   fontSize={12 / viewport.zoom}
-                  fontWeight={700}
+                  fontWeight={guide.isEqual ? 800 : 700}
                   textAnchor="middle"
                   dominantBaseline="middle"
                   paintOrder="stroke"

@@ -131,10 +131,6 @@ export const Node = ({ node }: NodeProps) => {
     let bestVerticalDistance = Number.POSITIVE_INFINITY;
     let bestHorizontalPosition: number | null = null;
     let bestHorizontalDistance = Number.POSITIVE_INFINITY;
-    let bestVerticalSpacing: AlignmentGuide | null = null;
-    let bestVerticalSpacingDistance = Number.POSITIVE_INFINITY;
-    let bestHorizontalSpacing: AlignmentGuide | null = null;
-    let bestHorizontalSpacingDistance = Number.POSITIVE_INFINITY;
     const otherNodes = nodes.filter((otherNode) => otherNode.id !== node.id);
 
     otherNodes.forEach((otherNode) => {
@@ -164,132 +160,82 @@ export const Node = ({ node }: NodeProps) => {
       });
     });
 
-    for (let i = 0; i < otherNodes.length; i += 1) {
-      for (let j = i + 1; j < otherNodes.length; j += 1) {
-        const first = otherNodes[i];
-        const second = otherNodes[j];
+    const draggedNode = { ...node, x, y };
+    const candidateNodes = [...otherNodes, draggedNode];
+    const verticalStack = candidateNodes
+      .filter((candidate) => {
+        const candidateCenterX = candidate.x + candidate.w / 2;
+        const overlapsDragged = candidate.x < draggedBounds.right && candidate.x + candidate.w > draggedBounds.left;
+        const centerDistance = Math.abs(candidateCenterX - draggedBounds.centerX);
+        return candidate.id === node.id || overlapsDragged || centerDistance <= 60 / viewport.zoom;
+      })
+      .sort((first, second) => first.y - second.y);
+    const horizontalStack = candidateNodes
+      .filter((candidate) => {
+        const candidateCenterY = candidate.y + candidate.h / 2;
+        const overlapsDragged = candidate.y < draggedBounds.bottom && candidate.y + candidate.h > draggedBounds.top;
+        const centerDistance = Math.abs(candidateCenterY - draggedBounds.centerY);
+        return candidate.id === node.id || overlapsDragged || centerDistance <= 60 / viewport.zoom;
+      })
+      .sort((first, second) => first.x - second.x);
 
-        const leftNode = first.x <= second.x ? first : second;
-        const rightNode = leftNode === first ? second : first;
-        const existingHorizontalGap = rightNode.x - (leftNode.x + leftNode.w);
+    const spacingGuides: AlignmentGuide[] = [];
+    const verticalGaps = verticalStack
+      .map((currentNode, index) => {
+        const nextNode = verticalStack[index + 1];
+        if (!nextNode) return null;
 
-        if (existingHorizontalGap >= 0) {
-          const gapToLeft = draggedBounds.left - (rightNode.x + rightNode.w);
-          const gapToRight = leftNode.x - draggedBounds.right;
-          const gapBetweenLeftAndDragged = draggedBounds.left - (leftNode.x + leftNode.w);
-          const gapBetweenDraggedAndRight = rightNode.x - draggedBounds.right;
+        return {
+          start: currentNode.y + currentNode.h,
+          end: nextNode.y,
+          right: Math.max(currentNode.x + currentNode.w, nextNode.x + nextNode.w),
+          value: nextNode.y - (currentNode.y + currentNode.h),
+        };
+      })
+      .filter((gap): gap is { start: number; end: number; right: number; value: number } => gap !== null && gap.value >= 0);
+    const horizontalGaps = horizontalStack
+      .map((currentNode, index) => {
+        const nextNode = horizontalStack[index + 1];
+        if (!nextNode) return null;
 
-          if (gapToLeft >= 0) {
-            const distance = Math.abs(gapToLeft - existingHorizontalGap);
-            if (distance <= spacingThreshold && distance < bestVerticalSpacingDistance) {
-              bestVerticalSpacingDistance = distance;
-              bestVerticalSpacing = {
-                type: 'spacing',
-                orientation: 'vertical',
-                start: rightNode.x + rightNode.w,
-                end: draggedBounds.left,
-                crossStart: draggedBounds.centerY,
-                crossEnd: draggedBounds.centerY,
-                label: `${Math.round(existingHorizontalGap)}`,
-              };
-            }
-          }
+        return {
+          start: currentNode.x + currentNode.w,
+          end: nextNode.x,
+          bottom: Math.max(currentNode.y + currentNode.h, nextNode.y + nextNode.h),
+          value: nextNode.x - (currentNode.x + currentNode.w),
+        };
+      })
+      .filter((gap): gap is { start: number; end: number; bottom: number; value: number } => gap !== null && gap.value >= 0);
+    const verticalGapsAreEqual =
+      verticalGaps.length >= 2 && Math.max(...verticalGaps.map((gap) => gap.value)) - Math.min(...verticalGaps.map((gap) => gap.value)) <= spacingThreshold;
+    const horizontalGapsAreEqual =
+      horizontalGaps.length >= 2 && Math.max(...horizontalGaps.map((gap) => gap.value)) - Math.min(...horizontalGaps.map((gap) => gap.value)) <= spacingThreshold;
 
-          if (gapToRight >= 0) {
-            const distance = Math.abs(gapToRight - existingHorizontalGap);
-            if (distance <= spacingThreshold && distance < bestVerticalSpacingDistance) {
-              bestVerticalSpacingDistance = distance;
-              bestVerticalSpacing = {
-                type: 'spacing',
-                orientation: 'vertical',
-                start: draggedBounds.right,
-                end: leftNode.x,
-                crossStart: draggedBounds.centerY,
-                crossEnd: draggedBounds.centerY,
-                label: `${Math.round(existingHorizontalGap)}`,
-              };
-            }
-          }
+    verticalGaps.forEach((gap) => {
+      spacingGuides.push({
+        type: 'spacing',
+        orientation: 'horizontal',
+        start: gap.start,
+        end: gap.end,
+        crossStart: gap.right + 18 / viewport.zoom,
+        crossEnd: gap.right + 18 / viewport.zoom,
+        label: `${Math.round(gap.value)}`,
+        isEqual: verticalGapsAreEqual,
+      });
+    });
 
-          if (gapBetweenLeftAndDragged >= 0 && gapBetweenDraggedAndRight >= 0) {
-            const distance = Math.abs(gapBetweenLeftAndDragged - gapBetweenDraggedAndRight);
-            if (distance <= spacingThreshold && distance < bestVerticalSpacingDistance) {
-              const spacingLabel = `${Math.round(gapBetweenLeftAndDragged)} = ${Math.round(gapBetweenDraggedAndRight)}`;
-              bestVerticalSpacingDistance = distance;
-              bestVerticalSpacing = {
-                type: 'spacing',
-                orientation: 'vertical',
-                start: leftNode.x + leftNode.w,
-                end: rightNode.x,
-                crossStart: draggedBounds.centerY,
-                crossEnd: draggedBounds.centerY,
-                label: spacingLabel,
-              };
-            }
-          }
-        }
-
-        const topNode = first.y <= second.y ? first : second;
-        const bottomNode = topNode === first ? second : first;
-        const existingVerticalGap = bottomNode.y - (topNode.y + topNode.h);
-
-        if (existingVerticalGap >= 0) {
-          const gapAbove = draggedBounds.top - (bottomNode.y + bottomNode.h);
-          const gapBelow = topNode.y - draggedBounds.bottom;
-          const gapBetweenTopAndDragged = draggedBounds.top - (topNode.y + topNode.h);
-          const gapBetweenDraggedAndBottom = bottomNode.y - draggedBounds.bottom;
-
-          if (gapAbove >= 0) {
-            const distance = Math.abs(gapAbove - existingVerticalGap);
-            if (distance <= spacingThreshold && distance < bestHorizontalSpacingDistance) {
-              bestHorizontalSpacingDistance = distance;
-              bestHorizontalSpacing = {
-                type: 'spacing',
-                orientation: 'horizontal',
-                start: bottomNode.y + bottomNode.h,
-                end: draggedBounds.top,
-                crossStart: draggedBounds.centerX,
-                crossEnd: draggedBounds.centerX,
-                label: `${Math.round(existingVerticalGap)}`,
-              };
-            }
-          }
-
-          if (gapBelow >= 0) {
-            const distance = Math.abs(gapBelow - existingVerticalGap);
-            if (distance <= spacingThreshold && distance < bestHorizontalSpacingDistance) {
-              bestHorizontalSpacingDistance = distance;
-              bestHorizontalSpacing = {
-                type: 'spacing',
-                orientation: 'horizontal',
-                start: draggedBounds.bottom,
-                end: topNode.y,
-                crossStart: draggedBounds.centerX,
-                crossEnd: draggedBounds.centerX,
-                label: `${Math.round(existingVerticalGap)}`,
-              };
-            }
-          }
-
-          if (gapBetweenTopAndDragged >= 0 && gapBetweenDraggedAndBottom >= 0) {
-            const distance = Math.abs(gapBetweenTopAndDragged - gapBetweenDraggedAndBottom);
-            if (distance <= spacingThreshold && distance < bestHorizontalSpacingDistance) {
-              const spacingLabel = `${Math.round(gapBetweenTopAndDragged)} = ${Math.round(gapBetweenDraggedAndBottom)}`;
-              bestHorizontalSpacingDistance = distance;
-              bestHorizontalSpacing = {
-                type: 'spacing',
-                orientation: 'horizontal',
-                start: topNode.y + topNode.h,
-                end: bottomNode.y,
-                crossStart: draggedBounds.centerX,
-                crossEnd: draggedBounds.centerX,
-                label: spacingLabel,
-              };
-            }
-          }
-        }
-      }
-    }
+    horizontalGaps.forEach((gap) => {
+      spacingGuides.push({
+        type: 'spacing',
+        orientation: 'vertical',
+        start: gap.start,
+        end: gap.end,
+        crossStart: gap.bottom + 18 / viewport.zoom,
+        crossEnd: gap.bottom + 18 / viewport.zoom,
+        label: `${Math.round(gap.value)}`,
+        isEqual: horizontalGapsAreEqual,
+      });
+    });
 
     const guides: AlignmentGuide[] = [];
     if (bestVerticalPosition !== null) {
@@ -298,12 +244,7 @@ export const Node = ({ node }: NodeProps) => {
     if (bestHorizontalPosition !== null) {
       guides.push({ type: 'alignment', orientation: 'horizontal', position: bestHorizontalPosition });
     }
-    if (bestVerticalSpacing) {
-      guides.push(bestVerticalSpacing);
-    }
-    if (bestHorizontalSpacing) {
-      guides.push(bestHorizontalSpacing);
-    }
+    guides.push(...spacingGuides.slice(0, 6));
 
     return guides;
   };
