@@ -131,6 +131,7 @@ export const Node = ({ node }: NodeProps) => {
     let bestVerticalDistance = Number.POSITIVE_INFINITY;
     let bestHorizontalPosition: number | null = null;
     let bestHorizontalDistance = Number.POSITIVE_INFINITY;
+    const alignmentGuides: AlignmentGuide[] = [];
     const otherNodes = nodes.filter((otherNode) => otherNode.id !== node.id);
 
     otherNodes.forEach((otherNode) => {
@@ -146,6 +147,15 @@ export const Node = ({ node }: NodeProps) => {
             bestVerticalPosition = otherPosition;
             bestVerticalDistance = distance;
           }
+          if (distance <= threshold) {
+            alignmentGuides.push({
+              type: 'alignment',
+              orientation: 'vertical',
+              position: otherPosition,
+              start: Math.min(draggedBounds.top, otherNode.y) - 20 / viewport.zoom,
+              end: Math.max(draggedBounds.bottom, otherNode.y + otherNode.h) + 20 / viewport.zoom,
+            });
+          }
         });
       });
 
@@ -155,6 +165,15 @@ export const Node = ({ node }: NodeProps) => {
           if (distance <= threshold && distance < bestHorizontalDistance) {
             bestHorizontalPosition = otherPosition;
             bestHorizontalDistance = distance;
+          }
+          if (distance <= threshold) {
+            alignmentGuides.push({
+              type: 'alignment',
+              orientation: 'horizontal',
+              position: otherPosition,
+              start: Math.min(draggedBounds.left, otherNode.x) - 20 / viewport.zoom,
+              end: Math.max(draggedBounds.right, otherNode.x + otherNode.w) + 20 / viewport.zoom,
+            });
           }
         });
       });
@@ -211,38 +230,48 @@ export const Node = ({ node }: NodeProps) => {
     const horizontalGapsAreEqual =
       horizontalGaps.length >= 2 && Math.max(...horizontalGaps.map((gap) => gap.value)) - Math.min(...horizontalGaps.map((gap) => gap.value)) <= spacingThreshold;
 
-    verticalGaps.forEach((gap) => {
-      spacingGuides.push({
-        type: 'spacing',
-        orientation: 'horizontal',
-        start: gap.start,
-        end: gap.end,
-        crossStart: gap.right + 18 / viewport.zoom,
-        crossEnd: gap.right + 18 / viewport.zoom,
-        label: `${Math.round(gap.value)}`,
-        isEqual: verticalGapsAreEqual,
+    if (verticalGapsAreEqual) {
+      verticalGaps.forEach((gap) => {
+        spacingGuides.push({
+          type: 'spacing',
+          orientation: 'horizontal',
+          start: gap.start,
+          end: gap.end,
+          crossStart: gap.right + 18 / viewport.zoom,
+          crossEnd: gap.right + 18 / viewport.zoom,
+          label: `${Math.round(gap.value)}`,
+          isEqual: true,
+          showLabel: false,
+        });
       });
-    });
+    }
 
-    horizontalGaps.forEach((gap) => {
-      spacingGuides.push({
-        type: 'spacing',
-        orientation: 'vertical',
-        start: gap.start,
-        end: gap.end,
-        crossStart: gap.bottom + 18 / viewport.zoom,
-        crossEnd: gap.bottom + 18 / viewport.zoom,
-        label: `${Math.round(gap.value)}`,
-        isEqual: horizontalGapsAreEqual,
+    if (horizontalGapsAreEqual) {
+      horizontalGaps.forEach((gap) => {
+        spacingGuides.push({
+          type: 'spacing',
+          orientation: 'vertical',
+          start: gap.start,
+          end: gap.end,
+          crossStart: gap.bottom + 18 / viewport.zoom,
+          crossEnd: gap.bottom + 18 / viewport.zoom,
+          label: `${Math.round(gap.value)}`,
+          isEqual: true,
+          showLabel: false,
+        });
       });
-    });
+    }
 
-    const guides: AlignmentGuide[] = [];
+    const guides = [...alignmentGuides.slice(0, 8)];
     if (bestVerticalPosition !== null) {
-      guides.push({ type: 'alignment', orientation: 'vertical', position: bestVerticalPosition });
+      const minTop = Math.min(...verticalStack.map((stackNode) => stackNode.y)) - 20 / viewport.zoom;
+      const maxBottom = Math.max(...verticalStack.map((stackNode) => stackNode.y + stackNode.h)) + 20 / viewport.zoom;
+      guides.push({ type: 'alignment', orientation: 'vertical', position: bestVerticalPosition, start: minTop, end: maxBottom });
     }
     if (bestHorizontalPosition !== null) {
-      guides.push({ type: 'alignment', orientation: 'horizontal', position: bestHorizontalPosition });
+      const minLeft = Math.min(...horizontalStack.map((stackNode) => stackNode.x)) - 20 / viewport.zoom;
+      const maxRight = Math.max(...horizontalStack.map((stackNode) => stackNode.x + stackNode.w)) + 20 / viewport.zoom;
+      guides.push({ type: 'alignment', orientation: 'horizontal', position: bestHorizontalPosition, start: minLeft, end: maxRight });
     }
     guides.push(...spacingGuides.slice(0, 6));
 

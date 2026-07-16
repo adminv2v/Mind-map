@@ -199,6 +199,17 @@ export const Canvas = () => {
         >
           <path d="M0,0 L0,6 L9,3 z" fill={theme === 'dark' ? '#9ca3af' : '#6b7280'} />
         </marker>
+        <marker
+          id="spacing-arrow"
+          markerWidth="8"
+          markerHeight="8"
+          refX="4"
+          refY="4"
+          orient="auto-start-reverse"
+          markerUnits="strokeWidth"
+        >
+          <path d="M0,4 L8,0 L8,8 z" fill={theme === 'dark' ? '#ffb36b' : '#DC6300'} />
+        </marker>
       </defs>
 
       <g transform={`translate(${viewport.x}, ${viewport.y}) scale(${viewport.zoom})`}>
@@ -232,21 +243,25 @@ export const Canvas = () => {
                   strokeDasharray={guide.isEqual ? '4 4' : '2 5'}
                   opacity={guide.isEqual ? 1 : 0.82}
                   vectorEffect="non-scaling-stroke"
+                  markerStart="url(#spacing-arrow)"
+                  markerEnd="url(#spacing-arrow)"
                 />
-                <text
-                  x={labelX}
-                  y={labelY - 8 / viewport.zoom}
-                  fill={guideColor}
-                  fontSize={12 / viewport.zoom}
-                  fontWeight={guide.isEqual ? 800 : 700}
-                  textAnchor="middle"
-                  dominantBaseline="middle"
-                  paintOrder="stroke"
-                  stroke={theme === 'dark' ? '#111827' : '#ffffff'}
-                  strokeWidth={3 / viewport.zoom}
-                >
-                  {guide.label}
-                </text>
+                {guide.showLabel && (
+                  <text
+                    x={labelX}
+                    y={labelY - 8 / viewport.zoom}
+                    fill={guideColor}
+                    fontSize={12 / viewport.zoom}
+                    fontWeight={guide.isEqual ? 800 : 700}
+                    textAnchor="middle"
+                    dominantBaseline="middle"
+                    paintOrder="stroke"
+                    stroke={theme === 'dark' ? '#111827' : '#ffffff'}
+                    strokeWidth={3 / viewport.zoom}
+                  >
+                    {guide.label}
+                  </text>
+                )}
               </g>
             );
           }
@@ -254,13 +269,13 @@ export const Canvas = () => {
           return (
             <line
               key={`alignment-${guide.orientation}-${guide.position}`}
-              x1={guide.orientation === 'vertical' ? guide.position : visibleWorldBounds.left}
-              y1={guide.orientation === 'vertical' ? visibleWorldBounds.top : guide.position}
-              x2={guide.orientation === 'vertical' ? guide.position : visibleWorldBounds.right}
-              y2={guide.orientation === 'vertical' ? visibleWorldBounds.bottom : guide.position}
+              x1={guide.orientation === 'vertical' ? guide.position : guide.start ?? visibleWorldBounds.left}
+              y1={guide.orientation === 'vertical' ? guide.start ?? visibleWorldBounds.top : guide.position}
+              x2={guide.orientation === 'vertical' ? guide.position : guide.end ?? visibleWorldBounds.right}
+              y2={guide.orientation === 'vertical' ? guide.end ?? visibleWorldBounds.bottom : guide.position}
               stroke={guideColor}
               strokeWidth={1.5}
-              strokeDasharray="8 6"
+              strokeDasharray="4 5"
               opacity={0.85}
               vectorEffect="non-scaling-stroke"
               pointerEvents="none"
