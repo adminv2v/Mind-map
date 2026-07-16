@@ -188,7 +188,7 @@ export const Node = ({ node }: NodeProps) => {
                 orientation: 'vertical',
                 start: rightNode.x + rightNode.w,
                 end: draggedBounds.left,
-                crossStart: rightNode.y + rightNode.h / 2,
+                crossStart: draggedBounds.centerY,
                 crossEnd: draggedBounds.centerY,
                 label: `${Math.round(existingHorizontalGap)}`,
               };
@@ -205,7 +205,7 @@ export const Node = ({ node }: NodeProps) => {
                 start: draggedBounds.right,
                 end: leftNode.x,
                 crossStart: draggedBounds.centerY,
-                crossEnd: leftNode.y + leftNode.h / 2,
+                crossEnd: draggedBounds.centerY,
                 label: `${Math.round(existingHorizontalGap)}`,
               };
             }
@@ -214,15 +214,15 @@ export const Node = ({ node }: NodeProps) => {
           if (gapBetweenLeftAndDragged >= 0 && gapBetweenDraggedAndRight >= 0) {
             const distance = Math.abs(gapBetweenLeftAndDragged - gapBetweenDraggedAndRight);
             if (distance <= spacingThreshold && distance < bestVerticalSpacingDistance) {
-              const spacingLabel = `${Math.round((gapBetweenLeftAndDragged + gapBetweenDraggedAndRight) / 2)}`;
+              const spacingLabel = `${Math.round(gapBetweenLeftAndDragged)} = ${Math.round(gapBetweenDraggedAndRight)}`;
               bestVerticalSpacingDistance = distance;
               bestVerticalSpacing = {
                 type: 'spacing',
                 orientation: 'vertical',
                 start: leftNode.x + leftNode.w,
                 end: rightNode.x,
-                crossStart: Math.min(leftNode.y + leftNode.h / 2, rightNode.y + rightNode.h / 2, draggedBounds.centerY),
-                crossEnd: Math.max(leftNode.y + leftNode.h / 2, rightNode.y + rightNode.h / 2, draggedBounds.centerY),
+                crossStart: draggedBounds.centerY,
+                crossEnd: draggedBounds.centerY,
                 label: spacingLabel,
               };
             }
@@ -248,7 +248,7 @@ export const Node = ({ node }: NodeProps) => {
                 orientation: 'horizontal',
                 start: bottomNode.y + bottomNode.h,
                 end: draggedBounds.top,
-                crossStart: bottomNode.x + bottomNode.w / 2,
+                crossStart: draggedBounds.centerX,
                 crossEnd: draggedBounds.centerX,
                 label: `${Math.round(existingVerticalGap)}`,
               };
@@ -265,7 +265,7 @@ export const Node = ({ node }: NodeProps) => {
                 start: draggedBounds.bottom,
                 end: topNode.y,
                 crossStart: draggedBounds.centerX,
-                crossEnd: topNode.x + topNode.w / 2,
+                crossEnd: draggedBounds.centerX,
                 label: `${Math.round(existingVerticalGap)}`,
               };
             }
@@ -274,15 +274,15 @@ export const Node = ({ node }: NodeProps) => {
           if (gapBetweenTopAndDragged >= 0 && gapBetweenDraggedAndBottom >= 0) {
             const distance = Math.abs(gapBetweenTopAndDragged - gapBetweenDraggedAndBottom);
             if (distance <= spacingThreshold && distance < bestHorizontalSpacingDistance) {
-              const spacingLabel = `${Math.round((gapBetweenTopAndDragged + gapBetweenDraggedAndBottom) / 2)}`;
+              const spacingLabel = `${Math.round(gapBetweenTopAndDragged)} = ${Math.round(gapBetweenDraggedAndBottom)}`;
               bestHorizontalSpacingDistance = distance;
               bestHorizontalSpacing = {
                 type: 'spacing',
                 orientation: 'horizontal',
                 start: topNode.y + topNode.h,
                 end: bottomNode.y,
-                crossStart: Math.min(topNode.x + topNode.w / 2, bottomNode.x + bottomNode.w / 2, draggedBounds.centerX),
-                crossEnd: Math.max(topNode.x + topNode.w / 2, bottomNode.x + bottomNode.w / 2, draggedBounds.centerX),
+                crossStart: draggedBounds.centerX,
+                crossEnd: draggedBounds.centerX,
                 label: spacingLabel,
               };
             }
