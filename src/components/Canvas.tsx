@@ -22,6 +22,7 @@ export const Canvas = () => {
     isDrawingConnection,
     tempConnectionEnd,
     connectionStart,
+    alignmentGuides,
   } = useMindMapStore();
 
   useEffect(() => {
@@ -166,6 +167,12 @@ export const Canvas = () => {
   const visibleEdges = edges.filter(
     (edge) => !hiddenNodeIds.has(edge.from) && !hiddenNodeIds.has(edge.to)
   );
+  const visibleWorldBounds = {
+    left: -viewport.x / viewport.zoom,
+    right: (dimensions.width - viewport.x) / viewport.zoom,
+    top: -viewport.y / viewport.zoom,
+    bottom: (dimensions.height - viewport.y) / viewport.zoom,
+  };
 
   return (
     <svg
@@ -196,6 +203,22 @@ export const Canvas = () => {
 
       <g transform={`translate(${viewport.x}, ${viewport.y}) scale(${viewport.zoom})`}>
         <Grid viewport={viewport} dimensions={dimensions} theme={theme} />
+
+        {alignmentGuides.map((guide) => (
+          <line
+            key={`${guide.orientation}-${guide.position}`}
+            x1={guide.orientation === 'vertical' ? guide.position : visibleWorldBounds.left}
+            y1={guide.orientation === 'vertical' ? visibleWorldBounds.top : guide.position}
+            x2={guide.orientation === 'vertical' ? guide.position : visibleWorldBounds.right}
+            y2={guide.orientation === 'vertical' ? visibleWorldBounds.bottom : guide.position}
+            stroke={theme === 'dark' ? '#ffb36b' : '#DC6300'}
+            strokeWidth={1.5}
+            strokeDasharray="8 6"
+            opacity={0.85}
+            vectorEffect="non-scaling-stroke"
+            pointerEvents="none"
+          />
+        ))}
 
         {visibleEdges.map((edge) => (
           <EdgeComponent key={edge.id} edge={edge} />

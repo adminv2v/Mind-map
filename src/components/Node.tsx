@@ -1,6 +1,6 @@
 import { useRef, useState, useEffect } from 'react';
 import { Node as NodeType } from '../types';
-import { useMindMapStore } from '../store';
+import { AlignmentGuide, useMindMapStore } from '../store';
 import { screenToWorld } from '../utils/geometry';
 import { getLevelStyle, getLevelColor } from '../utils/levelStyles';
 import { Paperclip, Check } from 'lucide-react';
@@ -14,8 +14,10 @@ export const Node = ({ node }: NodeProps) => {
     updateNode,
     selectNode,
     selectedNodes,
+    nodes,
     viewport,
     theme,
+    setAlignmentGuides,
   } = useMindMapStore();
 
   const [isDragging, setIsDragging] = useState(false);
@@ -56,6 +58,7 @@ export const Node = ({ node }: NodeProps) => {
       const newY = world.y - dragStart.y;
 
       updateNode(node.id, { x: newX, y: newY });
+      setAlignmentGuides(getAlignmentGuides(newX, newY));
     } else if (isResizing) {
       const world = screenToWorld(e.clientX, e.clientY, viewport);
       const newW = Math.max(100, world.x - node.x);
@@ -68,6 +71,7 @@ export const Node = ({ node }: NodeProps) => {
   const handleMouseUp = () => {
     setIsDragging(false);
     setIsResizing(false);
+    setAlignmentGuides([]);
   };
 
   useEffect(() => {
@@ -105,6 +109,58 @@ export const Node = ({ node }: NodeProps) => {
     e.stopPropagation();
     setIsResizing(true);
     selectNode(node.id);
+  };
+
+  const getAlignmentGuides = (x: number, y: number): AlignmentGuide[] => {
+    const threshold = 6 / viewport.zoom;
+    const draggedPositions = {
+      vertical: [x, x + node.w / 2, x + node.w],
+      horizontal: [y, y + node.h / 2, y + node.h],
+    };
+
+    let bestVerticalPosition: number | null = null;
+    let bestVerticalDistance = Number.POSITIVE_INFINITY;
+    let bestHorizontalPosition: number | null = null;
+    let bestHorizontalDistance = Number.POSITIVE_INFINITY;
+
+    nodes.forEach((otherNode) => {
+      if (otherNode.id === node.id) return;
+
+      const otherPositions = {
+        vertical: [otherNode.x, otherNode.x + otherNode.w / 2, otherNode.x + otherNode.w],
+        horizontal: [otherNode.y, otherNode.y + otherNode.h / 2, otherNode.y + otherNode.h],
+      };
+
+      draggedPositions.vertical.forEach((draggedPosition) => {
+        otherPositions.vertical.forEach((otherPosition) => {
+          const distance = Math.abs(draggedPosition - otherPosition);
+          if (distance <= threshold && distance < bestVerticalDistance) {
+            bestVerticalPosition = otherPosition;
+            bestVerticalDistance = distance;
+          }
+        });
+      });
+
+      draggedPositions.horizontal.forEach((draggedPosition) => {
+        otherPositions.horizontal.forEach((otherPosition) => {
+          const distance = Math.abs(draggedPosition - otherPosition);
+          if (distance <= threshold && distance < bestHorizontalDistance) {
+            bestHorizontalPosition = otherPosition;
+            bestHorizontalDistance = distance;
+          }
+        });
+      });
+    });
+
+    const guides: AlignmentGuide[] = [];
+    if (bestVerticalPosition !== null) {
+      guides.push({ orientation: 'vertical', position: bestVerticalPosition });
+    }
+    if (bestHorizontalPosition !== null) {
+      guides.push({ orientation: 'horizontal', position: bestHorizontalPosition });
+    }
+
+    return guides;
   };
 
   const handleOpenAttachment = (e: React.MouseEvent) => {

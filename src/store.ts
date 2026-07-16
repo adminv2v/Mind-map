@@ -7,6 +7,11 @@ interface HistoryState {
   edges: Edge[];
 }
 
+export interface AlignmentGuide {
+  orientation: 'vertical' | 'horizontal';
+  position: number;
+}
+
 export interface MapRecord {
   id: string;
   name: string;
@@ -36,6 +41,7 @@ interface MindMapStore {
   tempConnectionEnd: { x: number; y: number } | null;
   sidebarOpen: boolean;
   toolbarPosition: { x: number; y: number };
+  alignmentGuides: AlignmentGuide[];
 
   // Computed
   mapName: string;
@@ -78,6 +84,7 @@ interface MindMapStore {
   // UI
   toggleSidebar: () => void;
   setToolbarPosition: (position: { x: number; y: number }) => void;
+  setAlignmentGuides: (guides: AlignmentGuide[]) => void;
 
   // Node helpers
   duplicateNode: (id: string) => void;
@@ -153,6 +160,7 @@ export const useMindMapStore = create<MindMapStore>((set, get) => ({
   tempConnectionEnd: null,
   sidebarOpen: true,
   toolbarPosition: { x: 16, y: 16 },
+  alignmentGuides: [],
   get mapName() {
     const s = get();
     return normalizeMapName(s.maps.find((m) => m.id === s.currentMapId)?.name);
@@ -248,6 +256,8 @@ export const useMindMapStore = create<MindMapStore>((set, get) => ({
     });
     get().saveToLocalStorage();
   },
+
+  setAlignmentGuides: (guides) => set({ alignmentGuides: guides }),
 
   switchMap: (id) => {
     const s = get();
