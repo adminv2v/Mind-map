@@ -16,6 +16,8 @@ export const useKeyboardShortcuts = () => {
     setViewport,
     viewport,
     exportData,
+    alignSelectedNodes,
+    distributeSelectedNodes,
   } = useMindMapStore();
 
   useEffect(() => {
@@ -23,7 +25,31 @@ export const useKeyboardShortcuts = () => {
       const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
       const cmdOrCtrl = isMac ? e.metaKey : e.ctrlKey;
 
-      if (cmdOrCtrl && e.key === 'z' && !e.shiftKey) {
+      if (cmdOrCtrl && e.altKey && selectedNodes.length > 1 && e.key === 'ArrowLeft') {
+        e.preventDefault();
+        alignSelectedNodes('left');
+      } else if (cmdOrCtrl && e.altKey && selectedNodes.length > 1 && e.key === 'ArrowRight') {
+        e.preventDefault();
+        alignSelectedNodes('right');
+      } else if (cmdOrCtrl && e.altKey && selectedNodes.length > 1 && e.key === 'ArrowUp') {
+        e.preventDefault();
+        alignSelectedNodes('top');
+      } else if (cmdOrCtrl && e.altKey && selectedNodes.length > 1 && e.key === 'ArrowDown') {
+        e.preventDefault();
+        alignSelectedNodes('bottom');
+      } else if (cmdOrCtrl && e.altKey && selectedNodes.length > 1 && e.key.toLowerCase() === 'c') {
+        e.preventDefault();
+        alignSelectedNodes('center');
+      } else if (cmdOrCtrl && e.altKey && selectedNodes.length > 1 && e.key.toLowerCase() === 'm') {
+        e.preventDefault();
+        alignSelectedNodes('middle');
+      } else if (cmdOrCtrl && e.altKey && selectedNodes.length > 2 && e.key.toLowerCase() === 'h') {
+        e.preventDefault();
+        distributeSelectedNodes('horizontal');
+      } else if (cmdOrCtrl && e.altKey && selectedNodes.length > 2 && e.key.toLowerCase() === 'v') {
+        e.preventDefault();
+        distributeSelectedNodes('vertical');
+      } else if (cmdOrCtrl && e.key === 'z' && !e.shiftKey) {
         e.preventDefault();
         undo();
       } else if (cmdOrCtrl && e.key === 'z' && e.shiftKey) {
@@ -83,6 +109,8 @@ export const useKeyboardShortcuts = () => {
     setViewport,
     viewport,
     exportData,
+    alignSelectedNodes,
+    distributeSelectedNodes,
   ]);
 };
 

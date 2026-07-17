@@ -11,6 +11,14 @@ import {
   ChevronDown,
   ChevronRight,
   Circle,
+  AlignHorizontalJustifyStart,
+  AlignHorizontalJustifyCenter,
+  AlignHorizontalJustifyEnd,
+  AlignVerticalJustifyStart,
+  AlignVerticalJustifyCenter,
+  AlignVerticalJustifyEnd,
+  MoreHorizontal,
+  MoreVertical,
 } from 'lucide-react';
 import { useMindMapStore } from '../store';
 
@@ -47,6 +55,8 @@ export const ContextMenu = ({ x, y, nodeId, edgeId, onClose }: ContextMenuProps)
     selectedNodes,
     updateNode,
     updateEdge,
+    alignSelectedNodes,
+    distributeSelectedNodes,
   } = useMindMapStore();
 
   useLayoutEffect(() => {
@@ -90,6 +100,7 @@ export const ContextMenu = ({ x, y, nodeId, edgeId, onClose }: ContextMenuProps)
   const selectedOtherNode = nodeId
     ? selectedNodes.find((selectedId) => selectedId !== nodeId)
     : undefined;
+  const hasMultipleSelectedNodes = selectedNodes.length > 1;
 
   const colorChoices = [
     '#ffffff',
@@ -374,6 +385,54 @@ export const ContextMenu = ({ x, y, nodeId, edgeId, onClose }: ContextMenuProps)
             <Link size={16} />
             Connect Selected Node
           </button>
+        )}
+
+        {hasMultipleSelectedNodes && (
+          <>
+            <div className="h-px bg-gray-200 dark:bg-gray-700 my-1" />
+
+            <div className="px-4 py-1 text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+              Align Selected
+            </div>
+
+            <button onClick={() => handleAction(() => alignSelectedNodes('left'))} className={menuItemClass}>
+              <AlignHorizontalJustifyStart size={16} />
+              Align Left
+            </button>
+            <button onClick={() => handleAction(() => alignSelectedNodes('center'))} className={menuItemClass}>
+              <AlignHorizontalJustifyCenter size={16} />
+              Align Center
+            </button>
+            <button onClick={() => handleAction(() => alignSelectedNodes('right'))} className={menuItemClass}>
+              <AlignHorizontalJustifyEnd size={16} />
+              Align Right
+            </button>
+            <button onClick={() => handleAction(() => alignSelectedNodes('top'))} className={menuItemClass}>
+              <AlignVerticalJustifyStart size={16} />
+              Align Top
+            </button>
+            <button onClick={() => handleAction(() => alignSelectedNodes('middle'))} className={menuItemClass}>
+              <AlignVerticalJustifyCenter size={16} />
+              Align Middle
+            </button>
+            <button onClick={() => handleAction(() => alignSelectedNodes('bottom'))} className={menuItemClass}>
+              <AlignVerticalJustifyEnd size={16} />
+              Align Bottom
+            </button>
+
+            {selectedNodes.length > 2 && (
+              <>
+                <button onClick={() => handleAction(() => distributeSelectedNodes('horizontal'))} className={menuItemClass}>
+                  <MoreHorizontal size={16} />
+                  Distribute Horizontally
+                </button>
+                <button onClick={() => handleAction(() => distributeSelectedNodes('vertical'))} className={menuItemClass}>
+                  <MoreVertical size={16} />
+                  Distribute Vertically
+                </button>
+              </>
+            )}
+          </>
         )}
 
         <div className="h-px bg-gray-200 dark:bg-gray-700 my-1" />

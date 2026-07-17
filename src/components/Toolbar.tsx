@@ -209,6 +209,15 @@ export const Toolbar = ({
         '  Cmd/Ctrl+Shift+Z - Redo\n' +
         '  Cmd/Ctrl+S - Export/Save\n' +
         '  Right-click - Context menu\n\n' +
+        'ALIGN SELECTED:\n' +
+        '  Cmd/Ctrl+Alt+Left - Align left\n' +
+        '  Cmd/Ctrl+Alt+Right - Align right\n' +
+        '  Cmd/Ctrl+Alt+Up - Align top\n' +
+        '  Cmd/Ctrl+Alt+Down - Align bottom\n' +
+        '  Cmd/Ctrl+Alt+C - Align center\n' +
+        '  Cmd/Ctrl+Alt+M - Align middle\n' +
+        '  Cmd/Ctrl+Alt+H - Distribute horizontally\n' +
+        '  Cmd/Ctrl+Alt+V - Distribute vertically\n\n' +
         'All data is saved automatically to your device!'
     );
   };

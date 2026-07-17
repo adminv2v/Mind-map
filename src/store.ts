@@ -98,6 +98,8 @@ interface MindMapStore {
   duplicateNode: (id: string) => void;
   addChildNode: (parentId: string) => void;
   addAttachmentLinkToNode: (nodeId: string, url: string, name: string) => void;
+  alignSelectedNodes: (mode: 'left' | 'center' | 'right' | 'top' | 'middle' | 'bottom') => void;
+  distributeSelectedNodes: (axis: 'horizontal' | 'vertical') => void;
   autoLayout: () => void;
 
   // Map management
@@ -601,6 +603,90 @@ export const useMindMapStore = create<MindMapStore>((set, get) => ({
       ),
     }));
     get().saveHistory();
+    get().saveToLocalStorage();
+  },
+
+  alignSelectedNodes: (mode) => {
+    const state = get();
+    const selectedSet = new Set(state.selectedNodes);
+    const selected = state.nodes.filter((node) => selectedSet.has(node.id));
+    if (selected.length < 2) return;
+
+    get().saveHistory();
+
+    const left = Math.min(...selected.map((node) => node.x));
+    const right = Math.max(...selected.map((node) => node.x + node.w));
+    const center = selected.reduce((sum, node) => sum + node.x + node.w / 2, 0) / selected.length;
+    const top = Math.min(...selected.map((node) => node.y));
+    const bottom = Math.max(...selected.map((node) => node.y + node.h));
+    const middle = selected.reduce((sum, node) => sum + node.y + node.h / 2, 0) / selected.length;
+
+    set((currentState) => ({
+      nodes: currentState.nodes.map((node) => {
+        if (!selectedSet.has(node.id)) return node;
+
+        if (mode === 'left') return { ...node, x: left };
+        if (mode === 'center') return { ...node, x: center - node.w / 2 };
+        if (mode === 'right') return { ...node, x: right - node.w };
+        if (mode === 'top') return { ...node, y: top };
+        if (mode === 'middle') return { ...node, y: middle - node.h / 2 };
+        return { ...node, y: bottom - node.h };
+      }),
+    }));
+
+    get().saveToLocalStorage();
+  },
+
+  distributeSelectedNodes: (axis) => {
+    const state = get();
+    const selectedSet = new Set(state.selectedNodes);
+    const selected = state.nodes
+      .filter((node) => selectedSet.has(node.id))
+      .sort((first, second) => axis === 'horizontal' ? first.x - second.x : first.y - second.y);
+    if (selected.length < 3) return;
+
+    get().saveHistory();
+
+    if (axis === 'horizontal') {
+      const first = selected[0];
+      const last = selected[selected.length - 1];
+      const totalWidth = selected.reduce((sum, node) => sum + node.w, 0);
+      const span = last.x + last.w - first.x;
+      const gap = Math.max(0, (span - totalWidth) / (selected.length - 1));
+      let nextX = first.x;
+      const positions = new Map<string, number>();
+
+      selected.forEach((node) => {
+        positions.set(node.id, nextX);
+        nextX += node.w + gap;
+      });
+
+      set((currentState) => ({
+        nodes: currentState.nodes.map((node) =>
+          positions.has(node.id) ? { ...node, x: positions.get(node.id)! } : node
+        ),
+      }));
+    } else {
+      const first = selected[0];
+      const last = selected[selected.length - 1];
+      const totalHeight = selected.reduce((sum, node) => sum + node.h, 0);
+      const span = last.y + last.h - first.y;
+      const gap = Math.max(0, (span - totalHeight) / (selected.length - 1));
+      let nextY = first.y;
+      const positions = new Map<string, number>();
+
+      selected.forEach((node) => {
+        positions.set(node.id, nextY);
+        nextY += node.h + gap;
+      });
+
+      set((currentState) => ({
+        nodes: currentState.nodes.map((node) =>
+          positions.has(node.id) ? { ...node, y: positions.get(node.id)! } : node
+        ),
+      }));
+    }
+
     get().saveToLocalStorage();
   },
 
