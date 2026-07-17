@@ -198,6 +198,8 @@ export const Toolbar = ({
         '  Enter - Edit selected node\n' +
         '  Cmd/Ctrl+Enter - Add child node\n' +
         '  Cmd/Ctrl+D - Duplicate node\n' +
+        '  Cmd/Ctrl+Click - Multi-select nodes\n' +
+        '  Shift+Click - Connect selected node to clicked node\n' +
         '  Delete/Backspace - Delete selected\n\n' +
         'NAVIGATION:\n' +
         '  Tab/Shift+Tab - Navigate nodes\n' +

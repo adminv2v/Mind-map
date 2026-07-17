@@ -18,6 +18,7 @@ export const Node = ({ node }: NodeProps) => {
     viewport,
     theme,
     setAlignmentGuides,
+    connectSelectedNodesTo,
   } = useMindMapStore();
 
   const [isDragging, setIsDragging] = useState(false);
@@ -40,10 +41,16 @@ export const Node = ({ node }: NodeProps) => {
   const handleMouseDown = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (e.button === 0) {
-      if (e.ctrlKey || e.metaKey) {
+      if (e.shiftKey) {
+        if (selectedNodes.length > 0 && !selectedNodes.includes(node.id)) {
+          connectSelectedNodesTo(node.id);
+        } else {
+          selectNode(node.id);
+        }
+      } else if (e.ctrlKey || e.metaKey) {
         selectNode(node.id, true);
       } else {
-        selectNode(node.id, e.shiftKey);
+        selectNode(node.id);
         setAlignmentGuides([]);
         setIsDragging(true);
         const world = screenToWorld(e.clientX, e.clientY, viewport);

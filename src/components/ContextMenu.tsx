@@ -44,9 +44,9 @@ export const ContextMenu = ({ x, y, nodeId, edgeId, onClose }: ContextMenuProps)
     }
   });
   const {
-    addEdge,
     deleteNode,
     deleteEdge,
+    connectSelectedNodesTo,
     duplicateNode,
     addChildNode,
     addAttachmentLinkToNode,
@@ -265,23 +265,8 @@ export const ContextMenu = ({ x, y, nodeId, edgeId, onClose }: ContextMenuProps)
   };
 
   const connectSelectedNode = () => {
-    if (!nodeId || !selectedOtherNode) return;
-    const exists = edges.some(
-      (edge) =>
-        (edge.from === selectedOtherNode && edge.to === nodeId) ||
-        (edge.from === nodeId && edge.to === selectedOtherNode)
-    );
-    if (!exists) {
-      addEdge({
-        id: `edge-${Date.now()}-${Math.random().toString(36).slice(2)}`,
-        from: selectedOtherNode,
-        to: nodeId,
-        style: 'curved',
-        lineStyle: 'solid',
-        arrowType: 'single',
-        color: '#DC6300',
-      });
-    }
+    if (!nodeId) return;
+    connectSelectedNodesTo(nodeId);
   };
 
   if (nodeId && node) {

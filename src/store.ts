@@ -60,6 +60,7 @@ interface MindMapStore {
   addEdge: (edge: Edge) => void;
   updateEdge: (id: string, updates: Partial<Edge>) => void;
   deleteEdge: (id: string) => void;
+  connectSelectedNodesTo: (targetId: string) => void;
 
   // Selection
   selectNode: (id: string, multi?: boolean) => void;
@@ -375,6 +376,38 @@ export const useMindMapStore = create<MindMapStore>((set, get) => ({
   },
 
   // ─── Selection ────────────────────────────────────────────────────────────
+  connectSelectedNodesTo: (targetId) => {
+    const state = get();
+    const sourceIds = state.selectedNodes.filter((id) => id !== targetId);
+    if (sourceIds.length === 0) return;
+
+    const newEdges = sourceIds
+      .filter((sourceId) =>
+        !state.edges.some(
+          (edge) =>
+            (edge.from === sourceId && edge.to === targetId) ||
+            (edge.from === targetId && edge.to === sourceId)
+        )
+      )
+      .map((sourceId) => ({
+        id: `edge-${makeId()}`,
+        from: sourceId,
+        to: targetId,
+        style: 'curved' as const,
+        lineStyle: 'solid' as const,
+        arrowType: 'single' as const,
+        color: '#DC6300',
+      }));
+
+    if (newEdges.length === 0) return;
+
+    set((currentState) => ({
+      edges: [...currentState.edges, ...newEdges],
+    }));
+    get().saveHistory();
+    get().saveToLocalStorage();
+  },
+
   selectNode: (id, multi = false) => {
     set((state) => {
       const newSelectedNodes = multi
