@@ -44,6 +44,7 @@ export const Node = ({ node }: NodeProps) => {
         selectNode(node.id, true);
       } else {
         selectNode(node.id, e.shiftKey);
+        setAlignmentGuides([]);
         setIsDragging(true);
         const world = screenToWorld(e.clientX, e.clientY, viewport);
         setDragStart({ x: world.x - node.x, y: world.y - node.y });
@@ -131,7 +132,6 @@ export const Node = ({ node }: NodeProps) => {
     let bestVerticalDistance = Number.POSITIVE_INFINITY;
     let bestHorizontalPosition: number | null = null;
     let bestHorizontalDistance = Number.POSITIVE_INFINITY;
-    const alignmentGuides: AlignmentGuide[] = [];
     const otherNodes = nodes.filter((otherNode) => otherNode.id !== node.id);
 
     otherNodes.forEach((otherNode) => {
@@ -147,15 +147,6 @@ export const Node = ({ node }: NodeProps) => {
             bestVerticalPosition = otherPosition;
             bestVerticalDistance = distance;
           }
-          if (distance <= threshold) {
-            alignmentGuides.push({
-              type: 'alignment',
-              orientation: 'vertical',
-              position: otherPosition,
-              start: Math.min(draggedBounds.top, otherNode.y) - 20 / viewport.zoom,
-              end: Math.max(draggedBounds.bottom, otherNode.y + otherNode.h) + 20 / viewport.zoom,
-            });
-          }
         });
       });
 
@@ -165,15 +156,6 @@ export const Node = ({ node }: NodeProps) => {
           if (distance <= threshold && distance < bestHorizontalDistance) {
             bestHorizontalPosition = otherPosition;
             bestHorizontalDistance = distance;
-          }
-          if (distance <= threshold) {
-            alignmentGuides.push({
-              type: 'alignment',
-              orientation: 'horizontal',
-              position: otherPosition,
-              start: Math.min(draggedBounds.left, otherNode.x) - 20 / viewport.zoom,
-              end: Math.max(draggedBounds.right, otherNode.x + otherNode.w) + 20 / viewport.zoom,
-            });
           }
         });
       });
@@ -262,7 +244,7 @@ export const Node = ({ node }: NodeProps) => {
       });
     }
 
-    const guides = [...alignmentGuides.slice(0, 8)];
+    const guides: AlignmentGuide[] = [];
     if (bestVerticalPosition !== null) {
       const minTop = Math.min(...verticalStack.map((stackNode) => stackNode.y)) - 20 / viewport.zoom;
       const maxBottom = Math.max(...verticalStack.map((stackNode) => stackNode.y + stackNode.h)) + 20 / viewport.zoom;

@@ -23,6 +23,7 @@ export const Canvas = () => {
     tempConnectionEnd,
     connectionStart,
     alignmentGuides,
+    setAlignmentGuides,
   } = useMindMapStore();
 
   useEffect(() => {
@@ -36,6 +37,22 @@ export const Canvas = () => {
     window.addEventListener('resize', updateDimensions);
     return () => window.removeEventListener('resize', updateDimensions);
   }, []);
+
+  useEffect(() => {
+    if (alignmentGuides.length === 0) return;
+
+    const clearGuides = () => setAlignmentGuides([]);
+
+    window.addEventListener('mouseup', clearGuides);
+    window.addEventListener('pointerup', clearGuides);
+    window.addEventListener('blur', clearGuides);
+
+    return () => {
+      window.removeEventListener('mouseup', clearGuides);
+      window.removeEventListener('pointerup', clearGuides);
+      window.removeEventListener('blur', clearGuides);
+    };
+  }, [alignmentGuides.length, setAlignmentGuides]);
 
   const handleWheel = (e: React.WheelEvent) => {
     e.preventDefault();
@@ -80,6 +97,7 @@ export const Canvas = () => {
 
   const handleMouseUp = () => {
     setIsPanning(false);
+    setAlignmentGuides([]);
   };
 
   const getTouchDistance = (touches: React.TouchList) => {
@@ -140,6 +158,7 @@ export const Canvas = () => {
   const handleTouchEnd = () => {
     setIsPanning(false);
     setLastTouchDistance(null);
+    setAlignmentGuides([]);
   };
 
   const startNode = connectionStart ? nodes.find((n) => n.id === connectionStart) : null;
@@ -199,17 +218,6 @@ export const Canvas = () => {
         >
           <path d="M0,0 L0,6 L9,3 z" fill={theme === 'dark' ? '#9ca3af' : '#6b7280'} />
         </marker>
-        <marker
-          id="spacing-arrow"
-          markerWidth="8"
-          markerHeight="8"
-          refX="4"
-          refY="4"
-          orient="auto-start-reverse"
-          markerUnits="strokeWidth"
-        >
-          <path d="M0,4 L8,0 L8,8 z" fill={theme === 'dark' ? '#ffb36b' : '#DC6300'} />
-        </marker>
       </defs>
 
       <g transform={`translate(${viewport.x}, ${viewport.y}) scale(${viewport.zoom})`}>
@@ -230,6 +238,7 @@ export const Canvas = () => {
             const labelY = isVerticalSpacing
               ? (crossStart + crossEnd) / 2
               : (start + end) / 2;
+            const arrowSize = 6 / viewport.zoom;
 
             return (
               <g key={`spacing-${guide.orientation}-${index}`} pointerEvents="none">
@@ -243,9 +252,86 @@ export const Canvas = () => {
                   strokeDasharray={guide.isEqual ? '4 4' : '2 5'}
                   opacity={guide.isEqual ? 1 : 0.82}
                   vectorEffect="non-scaling-stroke"
-                  markerStart="url(#spacing-arrow)"
-                  markerEnd="url(#spacing-arrow)"
                 />
+                {isVerticalSpacing ? (
+                  <>
+                    <line
+                      x1={start}
+                      y1={crossStart}
+                      x2={start + arrowSize}
+                      y2={crossStart - arrowSize}
+                      stroke={guideColor}
+                      strokeWidth={1.5}
+                      vectorEffect="non-scaling-stroke"
+                    />
+                    <line
+                      x1={start}
+                      y1={crossStart}
+                      x2={start + arrowSize}
+                      y2={crossStart + arrowSize}
+                      stroke={guideColor}
+                      strokeWidth={1.5}
+                      vectorEffect="non-scaling-stroke"
+                    />
+                    <line
+                      x1={end}
+                      y1={crossEnd}
+                      x2={end - arrowSize}
+                      y2={crossEnd - arrowSize}
+                      stroke={guideColor}
+                      strokeWidth={1.5}
+                      vectorEffect="non-scaling-stroke"
+                    />
+                    <line
+                      x1={end}
+                      y1={crossEnd}
+                      x2={end - arrowSize}
+                      y2={crossEnd + arrowSize}
+                      stroke={guideColor}
+                      strokeWidth={1.5}
+                      vectorEffect="non-scaling-stroke"
+                    />
+                  </>
+                ) : (
+                  <>
+                    <line
+                      x1={crossStart}
+                      y1={start}
+                      x2={crossStart - arrowSize}
+                      y2={start + arrowSize}
+                      stroke={guideColor}
+                      strokeWidth={1.5}
+                      vectorEffect="non-scaling-stroke"
+                    />
+                    <line
+                      x1={crossStart}
+                      y1={start}
+                      x2={crossStart + arrowSize}
+                      y2={start + arrowSize}
+                      stroke={guideColor}
+                      strokeWidth={1.5}
+                      vectorEffect="non-scaling-stroke"
+                    />
+                    <line
+                      x1={crossEnd}
+                      y1={end}
+                      x2={crossEnd - arrowSize}
+                      y2={end - arrowSize}
+                      stroke={guideColor}
+                      strokeWidth={1.5}
+                      vectorEffect="non-scaling-stroke"
+                    />
+                    <line
+                      x1={crossEnd}
+                      y1={end}
+                      x2={crossEnd + arrowSize}
+                      y2={end - arrowSize}
+                      stroke={guideColor}
+                      strokeWidth={1.5}
+                      vectorEffect="non-scaling-stroke"
+                    />
+                  </>
+                )}
                 {guide.showLabel && (
                   <text
                     x={labelX}
