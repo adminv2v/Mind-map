@@ -381,14 +381,23 @@ export const useMindMapStore = create<MindMapStore>((set, get) => ({
     const sourceIds = state.selectedNodes.filter((id) => id !== targetId);
     if (sourceIds.length === 0) return;
 
-    const newEdges = sourceIds
-      .filter((sourceId) =>
-        !state.edges.some(
+    const sourceIdSet = new Set(sourceIds);
+    const existingEdgeIds = new Set(
+      state.edges
+        .filter(
           (edge) =>
-            (edge.from === sourceId && edge.to === targetId) ||
-            (edge.from === targetId && edge.to === sourceId)
+            (sourceIdSet.has(edge.from) && edge.to === targetId) ||
+            (sourceIdSet.has(edge.to) && edge.from === targetId)
         )
-      )
+        .map((edge) => edge.id)
+    );
+    const connectedSourceIds = new Set(
+      state.edges
+        .filter((edge) => existingEdgeIds.has(edge.id))
+        .map((edge) => (edge.to === targetId ? edge.from : edge.to))
+    );
+    const newEdges = sourceIds
+      .filter((sourceId) => !connectedSourceIds.has(sourceId))
       .map((sourceId) => ({
         id: `edge-${makeId()}`,
         from: sourceId,
@@ -399,10 +408,13 @@ export const useMindMapStore = create<MindMapStore>((set, get) => ({
         color: '#DC6300',
       }));
 
-    if (newEdges.length === 0) return;
+    if (newEdges.length === 0 && existingEdgeIds.size === 0) return;
 
     set((currentState) => ({
-      edges: [...currentState.edges, ...newEdges],
+      edges: [
+        ...currentState.edges.filter((edge) => !existingEdgeIds.has(edge.id)),
+        ...newEdges,
+      ],
     }));
     get().saveHistory();
     get().saveToLocalStorage();
